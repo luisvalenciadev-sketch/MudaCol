@@ -16,7 +16,22 @@ Regla aplicada: **Stitch manda en lo visual; el brief (`prompt_mudacol.md`) mand
 | Antetítulos y bajadas de sección reescritos | Los de Stitch hacían afirmaciones que no están en el brief ("sin cobros sorpresa", "flota propia monitoreada", "24 horas hábiles", "Pautas contractuales…"). |
 | Etiquetas amarillas `[FOTO: …]` sobre las fotos | Las tres fotos son imágenes generadas por Stitch, no fotos reales de MudaCol. El brief pide marcadores hasta tener las fotos reales. |
 | Íconos de WhatsApp, Instagram y Facebook en SVG propio | No existen en Material Symbols (Stitch usaba `chat` y `send`). |
-| Animaciones sutiles al hacer scroll | Las pide el brief; se desactivan con `prefers-reduced-motion`. |
+| Animaciones (ver lista abajo) | Las pide el brief. Se desactivan con `prefers-reduced-motion` y solo animan `transform` y `opacity`. |
+
+### Animaciones
+
+- **Header:** barra de progreso de lectura, sombra al bajar y subrayado animado en el menú.
+- **Hero:** entrada escalonada al cargar, foto que entra desde la derecha con un leve zoom de asentamiento, diagonal azul con deriva lenta y franja de servicios en cascada.
+- **Aparición al hacer scroll:** hacia arriba, desde la izquierda o derecha, o con escala, según la sección.
+- **Botones:** elevación y un destello diagonal al pasar el mouse.
+- **Tarjetas de servicios:** se elevan, el ícono se rellena de azul, aparece una línea de acento y la flecha se desplaza.
+- **Precio:** conteo de $0 a $500.000 (el lector de pantalla recibe siempre el valor final) y factores en cascada.
+- **Cobertura:** mapa animado e interactivo (ver la sección 06).
+- **Cómo funciona:** la línea de tiempo se dibuja y los pasos aparecen uno tras otro.
+- **Formulario:** transición corta entre pasos.
+- **Políticas y FAQ:** acordeones con altura animada.
+- **Contacto:** degradado que se desplaza lentamente.
+- **WhatsApp flotante:** entrada al cargar, un pulso cada 4 s y etiqueta "Cotiza por WhatsApp" al pasar el mouse.
 
 ## Por sección
 
@@ -49,7 +64,12 @@ Regla aplicada: **Stitch manda en lo visual; el brief (`prompt_mudacol.md`) mand
 
 **06 · Cobertura** (la mayor diferencia)
 - Se eliminaron el explorador de rutas por región, los 9 corredores con municipios y tiempos, los "4 grandes corredores troncales", las modalidades exclusiva/compartida, el buscador de municipios y los textos "Red de tránsito activa 100 %" y "Monitoreo satelital GPS". Todo eso era información inventada (tiempos, frecuencias, servicios) que no está en el brief y que MudaCol tendría que cumplir.
-- Se conservan las 4 tarjetas de ciudades base, el panel oscuro con el mapa (ahora con un contorno de Colombia y solo las ciudades del brief), la lista de rutas y destinos, el aviso amarillo "no ofrecemos mudanzas internacionales" y el CTA de WhatsApp.
+- Se conserva el panel oscuro con el mapa, ahora como protagonista. Usa el contorno real de Colombia (Natural Earth) y muestra solo las ciudades del brief.
+- Animaciones del mapa al entrar en pantalla: el contorno se dibuja, las ciudades aparecen, las rutas se trazan desde Bogotá y unos puntos de luz las recorren. Las ciudades base emiten un pulso suave.
+- Las ciudades base y los destinos son botones: al pasar el cursor, enfocarlos o tocarlos se resalta su ruta en el mapa.
+- En escritorio el mapa queda fijo mientras se recorre la lista.
+- Las cifras del pie del mapa (4 ciudades base, 4 rutas y destinos) se calculan a partir del propio contenido; no son datos nuevos.
+- Se mantienen el aviso "no ofrecemos mudanzas internacionales" y los CTA.
 
 **07 · Cómo funciona**
 - Textos de los 7 pasos exactos del brief.

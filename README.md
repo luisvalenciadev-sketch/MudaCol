@@ -17,13 +17,33 @@ npm run preview   # sirve dist/ en http://localhost:4173
 
 Requiere Node 20 o superior.
 
+## Despliegue en Render
+
+**Opción recomendada: Static Site** (gratis, servido desde CDN, sin servidor que mantener).
+
+- Con el Blueprint: *New → Blueprint* y elige este repositorio; usa `render.yaml`.
+- A mano: *New → Static Site* con:
+  - Build command: `npm ci && npm run build`
+  - Publish directory: `dist`
+
+**Opción Web Service** (si ya creaste uno):
+
+- Build command: `npm ci && npm run build`
+- Start command: `npm start` (sirve `dist/` en `0.0.0.0:$PORT`)
+
+No uses `npm run dev` en producción: levanta el servidor de desarrollo en `localhost:5173` y Render no lo detecta ("No open ports detected"). Si usas un dominio propio con Web Service, agrégalo en `preview.allowedHosts` de `vite.config.ts`.
+
+En ambos casos define `VITE_SITE_URL` en *Environment* cuando tengas el dominio final.
+
 ## Dónde editar
 
 | Qué | Dónde |
 |---|---|
 | **Todos los textos y datos** (menú, hero, servicios, precios, ciudades, pasos, campos del formulario, políticas, FAQ, contacto, footer) | `src/content.ts` |
 | Colores, fuentes y tamaños (tokens `brand-*`) | `tailwind.config.ts` |
-| Estilos base (botones, campos, foco, animaciones) | `src/index.css` |
+| Estilos base (botones, campos, foco) y todas las animaciones (bloque "Animaciones") | `src/index.css` |
+| Mapa de cobertura (contorno de Colombia y coordenadas de ciudades) | `src/components/coverage/` |
+| Navegación entre secciones (salto + deslizamiento corto) | `src/utils/scrollToSection.ts` |
 | Title, meta description, Open Graph y JSON-LD `MovingCompany` | `index.html` |
 | URL pública del sitio (para Open Graph y JSON-LD) | `.env` → `VITE_SITE_URL` |
 | Componentes por sección | `src/components/` |
@@ -95,4 +115,6 @@ y `contact`).
 - axe-core (WCAG 2.1 AA y buenas prácticas): 0 violaciones a 360 y 1280 px.
 - Navegación con teclado: enlace "Saltar al contenido", foco visible, acordeones con
   `aria-expanded` (Enter, Espacio, flechas, Inicio y Fin) y menú móvil que se cierra con Escape.
-- Animaciones desactivadas con `prefers-reduced-motion`.
+- Animaciones solo con `transform` y `opacity`, todas desactivadas con `prefers-reduced-motion` (el contenido se muestra completo y el precio aparece con su valor final).
+
+Para agregar una ciudad al mapa de cobertura, añádela en `coverage.bases` o `coverage.destinations` de `src/content.ts`. Después agrega sus coordenadas en `CITY_POINTS` (`src/components/coverage/colombiaMap.ts`) y la posición de su etiqueta en `LABELS` (`src/components/coverage/CoverageMap.tsx`).

@@ -28,26 +28,28 @@ export function Services() {
 
         <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {services.items.map((s, i) => (
-            <Reveal
-              as="li"
-              key={s.title}
-              delay={(i % 4) * 80}
-              className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
-            >
-              <div>
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50 text-brand-action">
-                  <Icon name={s.icon} className="text-[26px]" />
+            <Reveal as="li" key={s.title} delay={(i % 4) * 90} className="flex">
+              <div className="lift group relative flex w-full flex-col justify-between overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm hover:border-blue-200 hover:shadow-xl hover:shadow-blue-900/10">
+                {/* Línea de acento superior */}
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-brand-blue-deep to-brand-blue transition-transform duration-500 group-hover:scale-x-100 motion-reduce:transition-none"
+                />
+                <div>
+                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50 text-brand-action transition-colors duration-300 group-hover:bg-brand-action group-hover:text-white">
+                    <Icon name={s.icon} className="text-[26px] transition-transform duration-300 group-hover:scale-110 motion-reduce:transition-none" />
+                  </div>
+                  <h3 className="mb-2 font-headline text-lg font-bold uppercase text-slate-900">{s.title}</h3>
+                  <p className="font-body text-sm leading-relaxed text-slate-600">{s.text}</p>
                 </div>
-                <h3 className="mb-2 font-headline text-lg font-bold uppercase text-slate-900">{s.title}</h3>
-                <p className="font-body text-sm leading-relaxed text-slate-600">{s.text}</p>
+                <a
+                  href="#cotizar"
+                  className="mt-5 inline-flex items-center gap-1 self-start font-headline text-xs font-bold uppercase tracking-wider text-blue-700 hover:text-blue-900"
+                >
+                  {services.cardLink} <span className="sr-only">{s.title.toLowerCase()}</span>
+                  <Icon name="arrow_forward" className="text-[14px] transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none" />
+                </a>
               </div>
-              <a
-                href="#cotizar"
-                className="mt-5 inline-flex items-center gap-1 self-start font-headline text-xs font-bold uppercase tracking-wider text-blue-700 hover:text-blue-900"
-              >
-                {services.cardLink} <span className="sr-only">{s.title.toLowerCase()}</span>
-                <Icon name="arrow_forward" className="text-[14px]" />
-              </a>
             </Reveal>
           ))}
         </ul>

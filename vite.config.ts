@@ -9,4 +9,13 @@ export default defineConfig({
       checks: { pluginTimings: false },
     },
   },
+  // `npm start` sirve dist/ para hostings tipo Web Service (Render, Railway…):
+  // escucha en 0.0.0.0 y en el puerto que asigna la plataforma ($PORT).
+  preview: {
+    host: true,
+    port: Number(process.env.PORT) || 4173,
+    strictPort: true,
+    // Dominios permitidos además de localhost. Agrega aquí el dominio propio cuando exista.
+    allowedHosts: ['.onrender.com'],
+  },
 });

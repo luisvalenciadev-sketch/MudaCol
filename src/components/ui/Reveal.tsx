@@ -1,4 +1,7 @@
-import { useEffect, useRef, useState, type ElementType, type ReactNode } from 'react';
+import type { CSSProperties, ElementType, ReactNode } from 'react';
+import { useInView } from '../../hooks/useInView';
+
+export type RevealVariant = 'up' | 'left' | 'right' | 'scale' | 'fade';
 
 type RevealProps = {
   children: ReactNode;
@@ -6,41 +9,23 @@ type RevealProps = {
   className?: string;
   /** Retraso en ms para escalonar elementos de una cuadrícula */
   delay?: number;
+  /** Dirección de la entrada */
+  variant?: RevealVariant;
 };
 
 /**
  * Aparición sutil al entrar en pantalla. Con prefers-reduced-motion el CSS
  * deja el contenido visible sin transición (ver .reveal en index.css).
  */
-export function Reveal({ children, as: Tag = 'div', className = '', delay = 0 }: RevealProps) {
-  const ref = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (!('IntersectionObserver' in window)) {
-      setVisible(true);
-      return;
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+export function Reveal({ children, as: Tag = 'div', className = '', delay = 0, variant = 'up' }: RevealProps) {
+  const [ref, visible] = useInView<HTMLElement>({ rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
 
   return (
     <Tag
       ref={ref}
+      data-reveal={variant}
       className={`reveal ${visible ? 'is-visible' : ''} ${className}`}
-      style={delay ? { transitionDelay: `${delay}ms` } : undefined}
+      style={delay ? ({ '--reveal-delay': `${delay}ms` } as CSSProperties) : undefined}
     >
       {children}
     </Tag>

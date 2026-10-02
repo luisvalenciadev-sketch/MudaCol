@@ -208,6 +208,9 @@ export const pricing = {
   eyebrow: 'Precio',
   titleStart: 'Mudanzas desde',
   price: '$500.000 COP',
+  /** Valor numérico para la animación de conteo (debe coincidir con price) */
+  priceValue: 500000,
+  currency: 'COP',
   text: 'El precio final depende de la distancia, volumen de la mudanza, condiciones de acceso, cantidad de personal y servicios adicionales requeridos.',
   factorsTitle: 'Factores que influyen en tu cotización',
   factors: [
@@ -248,6 +251,16 @@ export const coverage = {
   mapTitle: 'Mapa de cobertura',
   legendBases: 'Ciudades base',
   legendDestinations: 'Rutas y destinos',
+  mapHint: 'Pasa el cursor o toca una ciudad para verla en el mapa.',
+  regionLabel: 'Costa Atlántica',
+  stats: {
+    bases: 'Ciudades base',
+    destinations: 'Rutas y destinos',
+    scopeLabel: 'Alcance',
+    scope: 'Local e intermunicipal',
+  },
+  selectedBase: 'Ciudad base',
+  selectedDestination: 'Ruta y destino',
 };
 
 export const steps = {

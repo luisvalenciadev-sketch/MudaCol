@@ -17,7 +17,7 @@ export function Includes() {
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Qué incluye */}
-          <Reveal className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm sm:p-9">
+          <Reveal variant="left" className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm sm:p-9">
             <div>
               <div className="mb-5 flex items-center gap-3 border-b border-slate-200 pb-5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
@@ -29,11 +29,11 @@ export function Includes() {
                 </div>
               </div>
               <ul className="space-y-3 font-body text-sm text-slate-700">
-                {included.items.map((item) => (
-                  <li key={item} className="flex items-start gap-3 rounded-lg border border-slate-100 bg-white p-3 shadow-xs">
+                {included.items.map((item, i) => (
+                  <Reveal as="li" key={item} delay={200 + i * 60} variant="fade" className="flex items-start gap-3 rounded-lg border border-slate-100 bg-white p-3 shadow-xs">
                     <Icon name="check_circle" className="mt-0.5 text-[20px] text-emerald-600" />
                     <span className="font-semibold text-slate-800">{item}</span>
-                  </li>
+                  </Reveal>
                 ))}
               </ul>
             </div>
@@ -46,7 +46,7 @@ export function Includes() {
           </Reveal>
 
           {/* Qué no incluye */}
-          <Reveal delay={120} className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm sm:p-9">
+          <Reveal variant="right" delay={120} className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm sm:p-9">
             <div>
               <div className="mb-5 flex items-center gap-3 border-b border-slate-200 pb-5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-100 text-rose-700">
@@ -58,11 +58,11 @@ export function Includes() {
                 </div>
               </div>
               <ul className="space-y-3 font-body text-sm text-slate-700">
-                {excluded.items.map((item) => (
-                  <li key={item} className="flex items-start gap-3 rounded-lg border border-slate-100 bg-white p-3 shadow-xs">
+                {excluded.items.map((item, i) => (
+                  <Reveal as="li" key={item} delay={200 + i * 60} variant="fade" className="flex items-start gap-3 rounded-lg border border-slate-100 bg-white p-3 shadow-xs">
                     <Icon name="close" className="mt-0.5 text-[20px] text-slate-500" />
                     <span className="font-semibold text-slate-800">{item}</span>
-                  </li>
+                  </Reveal>
                 ))}
                 <li className="flex items-start gap-3 rounded-lg border border-rose-200 bg-rose-50/50 p-3 shadow-xs">
                   <Icon name="dangerous" className="mt-0.5 text-[20px] text-rose-600" />

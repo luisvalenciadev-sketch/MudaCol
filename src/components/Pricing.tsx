@@ -1,8 +1,14 @@
 import { ctaLabels, pricing } from '../content';
 import { Icon } from './ui/Icon';
 import { Reveal } from './ui/Reveal';
+import { useInView } from '../hooks/useInView';
+import { useCountUp } from '../hooks/useCountUp';
+
+const formatCOP = (n: number) => n.toLocaleString('es-CO');
 
 export function Pricing() {
+  const [priceRef, priceInView] = useInView<HTMLHeadingElement>({ threshold: 0.6 });
+  const amount = useCountUp(pricing.priceValue, priceInView);
   return (
     <section
       id="precio"
@@ -20,8 +26,11 @@ export function Pricing() {
             <p className="mb-3 inline-block rounded-full border border-blue-500/30 bg-blue-500/20 px-3 py-1 font-body text-xs font-bold uppercase tracking-wider text-blue-200">
               {pricing.eyebrow}
             </p>
-            <h2 id="pricing-title" className="font-headline text-3xl font-bold uppercase leading-tight tracking-tight text-white sm:text-5xl">
-              {pricing.titleStart} <span className="text-blue-400">{pricing.price}</span>
+            <h2 ref={priceRef} id="pricing-title" className="font-headline text-3xl font-bold uppercase leading-tight tracking-tight text-white sm:text-5xl">
+              {pricing.titleStart} <span className="sr-only">{pricing.price}</span>
+              <span aria-hidden="true" className="inline-block min-w-[11ch] tabular-nums text-blue-400">
+                ${formatCOP(amount)} {pricing.currency}
+              </span>
             </h2>
             <p className="mt-4 font-body text-base leading-relaxed text-slate-300 sm:text-lg">{pricing.text}</p>
           </div>
@@ -30,8 +39,11 @@ export function Pricing() {
             <h3 className="mb-4 block font-headline text-sm font-semibold uppercase tracking-wider text-slate-200">{pricing.factorsTitle}</h3>
             <ul className="flex flex-wrap gap-2.5">
               {pricing.factors.map((f, i) => (
-                <li
+                <Reveal
+                  as="li"
                   key={f.label}
+                  delay={150 + i * 45}
+                  variant="scale"
                   className="flex items-center gap-2 rounded-lg border border-slate-700/70 bg-slate-900/80 px-3.5 py-2 font-body text-xs text-slate-200"
                 >
                   <Icon
@@ -39,7 +51,7 @@ export function Pricing() {
                     className={`text-[16px] ${i === pricing.factors.length - 1 ? 'text-emerald-400' : 'text-blue-400'}`}
                   />
                   {f.label}
-                </li>
+                </Reveal>
               ))}
             </ul>
 

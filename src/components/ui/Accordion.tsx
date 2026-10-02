@@ -75,7 +75,12 @@ export function Accordion({
         const btnId = `${baseId}-btn-${i}`;
         const panelId = `${baseId}-panel-${i}`;
         return (
-          <div key={i} className={`rounded-xl border border-slate-200 ${itemClassName}`}>
+          <div
+            key={i}
+            className={`rounded-xl border transition-[border-color,box-shadow] duration-300 ${
+              isOpen ? 'border-blue-200 shadow-md shadow-blue-900/5' : 'border-slate-200 hover:border-slate-300'
+            } ${itemClassName}`}
+          >
             <Heading className="m-0">
               <button
                 id={btnId}
@@ -96,14 +101,13 @@ export function Accordion({
                 />
               </button>
             </Heading>
-            <div
-              id={panelId}
-              role="region"
-              aria-labelledby={btnId}
-              hidden={!isOpen}
-              className={`mx-4 border-t pb-4 pt-3 font-body text-sm leading-relaxed text-slate-700 sm:mx-5 sm:pb-5 ${panelClassName}`}
-            >
-              {item.content}
+            {/* Altura animada con grid-template-rows; cerrado queda con visibility:hidden (fuera del árbol de accesibilidad y del foco) */}
+            <div id={panelId} role="region" aria-labelledby={btnId} data-open={isOpen} className="acc-panel">
+              <div>
+                <div className={`mx-4 border-t pb-4 pt-3 font-body text-sm leading-relaxed text-slate-700 sm:mx-5 sm:pb-5 ${panelClassName}`}>
+                  {item.content}
+                </div>
+              </div>
             </div>
           </div>
         );

@@ -14,7 +14,7 @@ export function Testimonials() {
     >
       <div className="container-page">
         <SectionHeader id="testimonials-title" eyebrow={testimonials.eyebrow} title={testimonials.title} className="mb-12" />
-        <Reveal className="mx-auto flex max-w-2xl flex-col items-center gap-3 rounded-xl border-2 border-dashed border-amber-400 bg-white p-8 text-center shadow-sm">
+        <Reveal variant="scale" className="mx-auto flex max-w-2xl flex-col items-center gap-3 rounded-xl border-2 border-dashed border-amber-400 bg-white p-8 text-center shadow-sm">
           <Icon name="format_quote" className="text-[32px] text-brand-action" />
           <p className="font-headline text-xl font-bold uppercase text-amber-900">{testimonials.placeholder}</p>
           <p className="font-body text-sm text-slate-600">{testimonials.note}</p>

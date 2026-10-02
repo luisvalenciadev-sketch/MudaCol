@@ -10,16 +10,16 @@ export function ContactCTA() {
       id="contacto"
       data-nav="contacto"
       aria-labelledby="contact-title"
-      className="relative overflow-hidden bg-gradient-to-br from-brand-blue-deep to-brand-blue py-20 text-white lg:py-24"
+      className="gradient-live relative overflow-hidden bg-gradient-to-br from-brand-blue-deep via-brand-blue to-brand-blue-deep py-20 text-white lg:py-24"
     >
       {/* Capa para asegurar contraste AA del texto blanco sobre el extremo claro del degradado */}
       <div aria-hidden="true" className="absolute inset-0 bg-brand-dark/20" />
       {/* Formas diagonales que sugieren movimiento */}
-      <div aria-hidden="true" className="pointer-events-none absolute -right-20 top-0 h-full w-[45%] -skew-x-12 bg-gradient-to-b from-white/10 to-transparent" />
+      <div aria-hidden="true" className="drift pointer-events-none absolute -right-20 top-0 h-full w-[45%] -skew-x-12 bg-gradient-to-b from-white/10 to-transparent" />
       <div aria-hidden="true" className="pointer-events-none absolute -right-48 top-0 h-full w-[20%] -skew-x-12 bg-brand-dark/15" />
 
       <div className="container-page relative grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
-        <Reveal className="lg:col-span-7">
+        <Reveal variant="left" className="lg:col-span-7">
           <h2 id="contact-title" className="font-headline text-4xl font-bold uppercase leading-tight tracking-tight sm:text-5xl">
             {contactCta.title}
           </h2>
@@ -37,7 +37,7 @@ export function ContactCTA() {
           </div>
         </Reveal>
 
-        <Reveal delay={120} className="lg:col-span-5">
+        <Reveal variant="right" delay={120} className="lg:col-span-5">
           <ul className="space-y-3 rounded-2xl border border-white/20 bg-brand-dark/40 p-6 font-body text-sm backdrop-blur-sm">
             <li className="flex items-center gap-3">
               <WhatsAppIcon className="h-5 w-5 shrink-0 text-brand-green" />

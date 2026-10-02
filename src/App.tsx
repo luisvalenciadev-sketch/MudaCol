@@ -13,12 +13,14 @@ import { QuoteForm } from './components/QuoteForm';
 import { Services } from './components/Services';
 import { Testimonials } from './components/Testimonials';
 import { WhatsAppFloat } from './components/WhatsAppFloat';
+import { useAnchorNavigation } from './hooks/useAnchorNavigation';
 
 export default function App() {
+  useAnchorNavigation();
   return (
     <>
       <Header />
-      <main id="contenido" className="pt-20">
+      <main id="contenido" tabIndex={-1} className="overflow-x-clip pt-20">
         <Hero />
         <About />
         <Services />

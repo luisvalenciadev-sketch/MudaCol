@@ -29,13 +29,47 @@ export function Header() {
     };
   }, [open]);
 
+  // Barra de progreso de lectura y sombra al bajar
+  const progressRef = useRef<HTMLDivElement>(null);
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      progressRef.current?.style.setProperty('--progress', String(max > 0 ? window.scrollY / max : 0));
+      setScrolled(window.scrollY > 12);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  // Subrayado animado: crece al pasar el mouse y queda fijo en la sección activa
   const linkCls = (id: string) =>
-    `whitespace-nowrap font-headline text-[15px] uppercase tracking-wider transition-colors ${
-      active === id ? 'font-bold text-blue-400' : 'text-slate-300 hover:text-white'
+    `relative whitespace-nowrap font-headline text-[15px] uppercase tracking-wider transition-colors after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:origin-left after:rounded-full after:bg-blue-400 after:transition-transform after:duration-300 motion-reduce:after:transition-none ${
+      active === id ? 'font-bold text-blue-400 after:scale-x-100' : 'text-slate-300 after:scale-x-0 hover:text-white hover:after:scale-x-100'
     }`;
 
   return (
-    <header className="fixed top-0 z-50 w-full border-b border-slate-800/80 bg-brand-dark/95 backdrop-blur-md">
+    <header
+      className={`fixed top-0 z-50 w-full border-b bg-brand-dark/95 backdrop-blur-md transition-shadow duration-300 ${
+        scrolled ? 'border-slate-800 shadow-lg shadow-black/40' : 'border-slate-800/80'
+      }`}
+    >
+      <div
+        ref={progressRef}
+        aria-hidden="true"
+        className="scroll-progress absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-brand-blue-deep via-brand-blue to-blue-300"
+      />
       <a
         href="#contenido"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-slate-900"

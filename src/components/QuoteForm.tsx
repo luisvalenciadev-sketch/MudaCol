@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { quoteForm as t } from '../content';
+import { ARRIVE_EVENT, type ArriveDetail } from '../utils/scrollToSection';
 import { buildWhatsappQuoteLink, submitQuote, type QuoteData, type SpecialItemKey } from '../services/quote';
 import { Checkbox, SelectField, TextField, YesNoField } from './form/Fields';
 import { FileUpload } from './form/FileUpload';
 import { WhatsAppIcon } from './ui/BrandIcons';
 import { Icon } from './ui/Icon';
-import { Reveal } from './ui/Reveal';
 import { SectionHeader } from './ui/SectionHeader';
 
 type Errors = Partial<Record<string, string>>;
@@ -91,6 +91,34 @@ export function QuoteForm() {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
   const firstRender = useRef(true);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [attention, setAttention] = useState(false);
+
+  // Llegada al cotizador (cualquier enlace a #cotizar o la URL ya en #cotizar):
+  // resalta la tarjeta y deja el foco listo para empezar.
+  useEffect(() => {
+    let timer = 0;
+    const arrive = () => {
+      setAttention(true);
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => setAttention(false), 1800);
+      // Con mouse y teclado: foco en el primer campo para escribir de inmediato.
+      // En pantallas táctiles no se abre el teclado sin que la persona lo pida: foco en el título.
+      const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      const field = fine ? cardRef.current?.querySelector<HTMLElement>('input, select, textarea') : null;
+      (field ?? headingRef.current ?? successRef.current)?.focus({ preventScroll: true });
+    };
+    const onArrive = (e: Event) => {
+      if ((e as CustomEvent<ArriveDetail>).detail.id === 'cotizar') arrive();
+    };
+    window.addEventListener(ARRIVE_EVENT, onArrive);
+    const initial = window.location.hash === '#cotizar' ? window.setTimeout(arrive, 400) : 0;
+    return () => {
+      window.removeEventListener(ARRIVE_EVENT, onArrive);
+      window.clearTimeout(timer);
+      window.clearTimeout(initial);
+    };
+  }, []);
 
   // Al cambiar de paso, lleva el foco al título del paso (no en la carga inicial)
   useEffect(() => {
@@ -169,14 +197,20 @@ export function QuoteForm() {
       id="cotizar"
       data-nav="cotizar"
       aria-labelledby="quote-title"
-      className="border-b border-slate-200 bg-white py-20 text-slate-900 lg:py-24"
+      className="scroll-mt-6 border-b border-slate-200 bg-white py-20 text-slate-900 lg:py-24"
     >
       <div className="mx-auto max-w-form px-4 lg:px-8">
-        <SectionHeader id="quote-title" eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} className="mb-10" />
+        {/* Sin animación de aparición: es destino de los botones "Cotiza ahora" y debe verse al llegar */}
+        <SectionHeader id="quote-title" eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} className="mb-10" animate={false} />
 
-        <Reveal className="rounded-2xl border border-slate-300 bg-white p-5 shadow-lg sm:p-10">
+        <div
+          ref={cardRef}
+          className={`rounded-2xl border bg-white p-5 shadow-lg transition-colors duration-500 sm:p-10 ${
+            attention ? 'form-attention border-brand-action' : 'border-slate-300'
+          }`}
+        >
           {status === 'success' ? (
-            <div ref={successRef} tabIndex={-1} role="status" className="flex flex-col items-center gap-5 py-8 text-center focus:outline-none">
+            <div ref={successRef} tabIndex={-1} role="status" className="step-in flex flex-col items-center gap-5 py-8 text-center focus:outline-none">
               <span className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
                 <Icon name="task_alt" className="text-[36px]" />
               </span>
@@ -265,6 +299,8 @@ export function QuoteForm() {
                   </p>
                 )}
 
+                {/* key={step}: cada paso entra con una transición corta */}
+                <div key={step} className="step-in">
                 {step === 0 && (
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <TextField {...field('fullName')} label={t.labels.fullName} placeholder={t.placeholders.fullName} required autoComplete="name" value={data.fullName} onChange={(v) => set('fullName', v)} />
@@ -370,6 +406,8 @@ export function QuoteForm() {
                   </div>
                 )}
 
+                </div>
+
                 {status === 'error' && (
                   <p role="alert" className="mt-5 rounded-lg border border-rose-200 bg-rose-50 p-3 font-body text-sm text-rose-800">
                     {t.submitError}
@@ -406,7 +444,7 @@ export function QuoteForm() {
               </form>
             </>
           )}
-        </Reveal>
+        </div>
       </div>
     </section>
   );

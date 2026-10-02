@@ -11,7 +11,7 @@ export function About() {
       className="border-b border-slate-200 bg-white py-20 text-slate-900 lg:py-24"
     >
       <div className="container-page grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
-        <Reveal className="space-y-6 lg:col-span-7">
+        <Reveal variant="left" className="space-y-6 lg:col-span-7">
           <div>
             <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 font-body text-xs font-bold uppercase tracking-wider text-blue-700">
               <span className="h-2 w-2 rounded-full bg-brand-action" aria-hidden="true" />
@@ -40,9 +40,10 @@ export function About() {
           {about.cards.map((card, i) => (
             <Reveal
               key={card.title}
-              delay={i * 120}
+              delay={i * 150}
+              variant="right"
               as="article"
-              className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md"
+              className="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-lg"
             >
               <div className="relative h-52 w-full overflow-hidden bg-slate-100">
                 <Picture
@@ -52,7 +53,7 @@ export function About() {
                   height={card.height}
                   sizes="(min-width: 1024px) 480px, 100vw"
                   alt={card.alt}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none"
                 />
                 <span className="placeholder-tag absolute left-3 top-3">{card.placeholder}</span>
               </div>
