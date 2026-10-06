@@ -2,3 +2,6 @@ node_modules
 dist
 *.local
 .DS_Store
+
+# Documentos para enviar al cliente (no se publican)
+entregables/
