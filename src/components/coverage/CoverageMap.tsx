@@ -45,9 +45,11 @@ type CoverageMapProps = {
   onHover: (name: string | null) => void;
   /** Dispara las animaciones de dibujo cuando el mapa entra en pantalla */
   drawn: boolean;
+  /** Destino de la ruta principal desde Bogotá: se dibuja siempre destacada */
+  featured?: string;
 };
 
-export function CoverageMap({ title, description, regionLabel, cities, active, onHover, drawn }: CoverageMapProps) {
+export function CoverageMap({ title, description, regionLabel, cities, active, onHover, drawn, featured }: CoverageMapProps) {
   const reduced = useReducedMotion();
   // Los puntos de luz que recorren las rutas aparecen cuando ya se dibujaron
   const [flowing, setFlowing] = useState(false);
@@ -129,7 +131,7 @@ export function CoverageMap({ title, description, regionLabel, cities, active, o
 
       {/* Rutas desde Bogotá */}
       {routes.map(({ city, d }, i) => {
-        const on = active === city.name;
+        const on = active === city.name || (active === null && featured === city.name);
         return (
           <g key={`r-${city.name}`} className={`map-route-wrap ${isDimmed(city.name) ? 'map-dimmed' : ''}`}>
             <path

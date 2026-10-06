@@ -1,4 +1,5 @@
-import { about } from '../content';
+import { about, trust } from '../content';
+import { Icon } from './ui/Icon';
 import { Picture } from './ui/Picture';
 import { Reveal } from './ui/Reveal';
 
@@ -23,6 +24,20 @@ export function About() {
             <div className="mt-3 h-1 w-20 rounded bg-brand-action" aria-hidden="true" />
           </div>
           <p className="font-body text-lg leading-relaxed text-slate-700">{about.text}</p>
+          {/* Datos de confianza confirmados por el cliente */}
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {trust.map((item) => (
+              <li key={item.label} className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-xs sm:flex-col sm:gap-2">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-brand-action">
+                  <Icon name={item.icon} className="text-[22px]" />
+                </span>
+                <span>
+                  <span className="block font-headline text-2xl font-bold leading-none text-slate-950">{item.value}</span>
+                  <span className="mt-1 block font-body text-sm leading-snug text-slate-600">{item.label}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
           <figure className="rounded-r-xl border-l-4 border-brand-action bg-slate-50 p-6 shadow-sm sm:p-7">
             <span className="mb-1 block select-none font-headline text-4xl leading-none text-brand-action" aria-hidden="true">
               “
@@ -55,7 +70,6 @@ export function About() {
                   alt={card.alt}
                   className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none"
                 />
-                <span className="placeholder-tag absolute left-3 top-3">{card.placeholder}</span>
               </div>
               <div className="p-5">
                 <h3 className="font-headline text-lg font-bold uppercase text-slate-900">{card.title}</h3>

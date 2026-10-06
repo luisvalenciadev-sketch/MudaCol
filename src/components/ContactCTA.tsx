@@ -42,11 +42,18 @@ export function ContactCTA() {
             <li className="flex items-center gap-3">
               <WhatsAppIcon className="h-5 w-5 shrink-0 text-brand-green" />
               <span>
-                WhatsApp:{' '}
+                WhatsApp y llamadas:{' '}
                 <a href={contact.whatsappUrl} target="_blank" rel="noopener noreferrer" className="font-bold underline-offset-2 hover:underline">
                   {contact.whatsappDisplay}
                 </a>
               </span>
+              <a
+                href={contact.telUrl}
+                className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-full border border-white/40 px-3 py-1 font-headline text-xs uppercase tracking-wider hover:bg-white/10"
+              >
+                <Icon name="call" className="text-[16px]" />
+                {contact.callLabel}
+              </a>
             </li>
             <li className="flex items-center gap-3">
               <Icon name="location_on" className="text-[20px] text-blue-200" />
@@ -56,7 +63,10 @@ export function ContactCTA() {
             </li>
             <li className="flex items-center gap-3">
               <Icon name="schedule" className="text-[20px] text-blue-200" />
-              <span>{contact.schedule}</span>
+              <span>
+                {contact.schedule}
+                <span className="block text-xs text-blue-100">{contact.holidays}</span>
+              </span>
             </li>
             <li className="flex items-center gap-3">
               <InstagramIcon className="h-5 w-5 shrink-0 text-blue-200" />
@@ -66,7 +76,9 @@ export function ContactCTA() {
             </li>
             <li className="flex items-center gap-3">
               <Icon name="mail" className="text-[20px] text-blue-200" />
-              <span className="placeholder-tag">{contact.email}</span>
+              <a href={`mailto:${contact.email}`} className="font-semibold underline-offset-2 hover:underline">
+                {contact.email}
+              </a>
             </li>
           </ul>
           <div className="mt-4 flex h-32 items-center justify-center rounded-2xl border-2 border-dashed border-white/40 bg-brand-dark/30">

@@ -50,13 +50,13 @@ En ambos casos define `VITE_SITE_URL` en *Environment* cuando tengas el dominio 
 
 ### Imágenes
 
-Las originales están en `design/stitch/images/`. `npm run images` genera los WebP optimizados en
+Las fuentes están en `design/images/pexels/` (fotos de banco de Pexels; créditos en `CREDITOS.md`). Las imágenes generadas por Stitch quedan en `design/stitch/images/` solo como registro del diseño. `npm run images` genera los WebP optimizados en
 `public/images/` y la imagen `og-mudacol.jpg` (script `scripts/optimize-images.mjs`).
 
-Para usar las fotos reales de la flota:
-1. Pon el archivo en `design/stitch/images/`.
-2. Agrégalo a `scripts/optimize-images.mjs` y corre `npm run images`.
-3. Cambia la ruta y el `alt` en `src/content.ts` (`hero.image`, `about.cards`) y quita el `placeholder`.
+Para usar fotos propias de MudaCol:
+1. Reemplaza el archivo en `design/images/pexels/` con el mismo nombre (`camion-furgon.jpg`, `personal-cargando.jpg` o `proteccion-muebles.jpg`).
+2. Corre `npm run images`.
+3. Ajusta el `alt` y las medidas (`width`/`height`) en `src/content.ts` (`hero.image`, `about.cards`) y actualiza `CREDITOS.md`.
 
 Si cambias la imagen del hero, actualiza también el `<link rel="preload">` de `index.html`.
 
@@ -66,25 +66,33 @@ Si cambias la imagen del hero, actualiza también el `<link rel="preload">` de `
 orden alfabético). Si agregas un ícono nuevo en `content.ts` o en un componente, añade su nombre
 a esa lista o no se va a ver.
 
-## Conectar el formulario
+## Formulario de cotización
 
-El envío está aislado en **`src/services/quote.ts` → `submitQuote(data)`**, que por ahora es una
-simulación (espera 1 segundo y responde OK). Para conectarlo:
+Por decisión del cliente, las solicitudes llegan **por WhatsApp** al asesor comercial de Bogotá.
+El envío está en **`src/services/quote.ts` → `sendQuote(data)`**:
 
-- Reemplaza el cuerpo de `submitQuote` con la integración elegida (endpoint propio, servicio de
-  correo, Google Sheets vía Apps Script, CRM…). En el comentario de la función hay un ejemplo con
-  `fetch` y `FormData`.
-- Conserva la firma `submitQuote(data: QuoteData): Promise<QuoteResult>`: el formulario no necesita
-  cambios.
-- `toPlainObject(data)` devuelve los datos listos para enviar (sin archivos); los archivos van
-  en `data.files`.
-- Hoy no hay límite de cantidad ni de tamaño de archivos. Defínelo según el servicio que reciba los
-  videos.
+1. Valida los 4 pasos. Todos los campos son obligatorios salvo "detalles"; ver `validateStep` en `src/components/QuoteForm.tsx`.
+2. Registra la conversión `generate_lead` (ver Medición).
+3. Abre WhatsApp con la solicitud completa, ordenada por secciones (`buildQuoteMessage`). La persona solo pulsa "Enviar" y adjunta sus fotos o videos en el chat; un enlace de WhatsApp no puede llevar archivos.
 
-El botón "Enviar por WhatsApp" arma el mensaje con nombre, origen, destino y fecha
-(`buildWhatsappQuoteLink` en el mismo archivo).
+Los encabezados del mensaje se editan en `quoteForm.message` de `src/content.ts`. Si más adelante se quiere guardar cada solicitud (correo, Google Sheets, CRM), se agrega dentro de `sendQuote` sin tocar el formulario.
+
+La confirmación automática al cliente se configura en WhatsApp Business (*Mensaje de bienvenida*).
+
+## Medición
+
+GA4 y Meta Pixel se activan solo si hay identificadores en `.env` (local) o en *Environment* de Render:
+
+```
+VITE_GA_ID=G-XXXXXXXXXX
+VITE_META_PIXEL_ID=1234567890
+```
+
+Eventos: `generate_lead` (envío del formulario), `contact` (clic en WhatsApp) y `click_to_call` (clic en "Llamar"). Detalle en `src/services/analytics.ts`.
 
 ## Marcadores pendientes
+
+Resumen completo de las respuestas del cliente y lo que falta pedir: [`docs/respuestas-cliente.md`](docs/respuestas-cliente.md).
 
 Se ven en la página como etiquetas amarillas. Se editan en `src/content.ts` (objeto `PLACEHOLDERS`
 y `contact`).
@@ -92,14 +100,14 @@ y `contact`).
 | Marcador | Dónde aparece | Qué falta |
 |---|---|---|
 | `[CIUDAD]` | Contacto, footer | Ciudad de la dirección Calle 156 # 7D-75 (probablemente Bogotá). Al confirmarla, agrega también `addressLocality` al JSON-LD de `index.html`. |
-| `[CORREO]` | Contacto, footer | Correo electrónico de contacto |
+| `[RAZÓN SOCIAL] · NIT [NIT]` | Footer | Datos de la empresa cuando quede registrada |
 | `[URL FACEBOOK]` | Footer | Enlace a la página de Facebook |
 | `[TESTIMONIOS: pendiente]` | Sección de testimonios | Testimonios reales con autorización del cliente |
 | `[MAPA]` | Contacto | Mapa embebido de la dirección, cuando se confirme la ciudad |
-| `[FOTO: camion-1.jpg …]` | Hero | Foto real del camión furgón de la flota (la actual es una imagen generada por Stitch) |
-| `[FOTO: personal cargando muebles]`, `[FOTO: protección de muebles]` | Quiénes somos | Fotos reales (las actuales son generadas por Stitch y muestran uniformes "MudaCol" que no son reales) |
+| Fotos | Inicio, Quiénes somos | Hoy son fotos de banco de Pexels aprobadas por el cliente (`design/images/pexels/CREDITOS.md`); reemplazar por fotos propias cuando existan |
 | Logo | Header, hero, footer | El logo es la recreación en SVG de Stitch (`src/components/ui/Logo.tsx`); reemplazar por el archivo oficial en vector |
-| `VITE_SITE_URL` | `.env` | Dominio definitivo (Open Graph y JSON-LD usan rutas relativas mientras tanto) |
+| `VITE_SITE_URL` | `.env` / Render | Dominio definitivo (Open Graph y JSON-LD usan rutas relativas mientras tanto) |
+| `VITE_GA_ID`, `VITE_META_PIXEL_ID` | `.env` / Render | ID de Google Analytics 4 y Meta Pixel |
 | Política de tratamiento de datos / Términos del servicio | Footer | Páginas legales (los enlaces apuntan a `#`) |
 
 ## Diseño

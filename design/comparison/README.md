@@ -14,7 +14,7 @@ Regla aplicada: **Stitch manda en lo visual; el brief (`prompt_mudacol.md`) mand
 | Botones de WhatsApp en un verde más oscuro (`brand-whatsapp`, `#13853F`) con texto blanco | El blanco sobre `#25D366` da 1,98:1 y no cumple AA; sobre `#13853F` da 4,7:1. `#25D366` se usa en íconos y puntos sobre fondo oscuro. |
 | Botones de acción en `brand-action` (#2563EB, el `blue-600` que usa Stitch) y no en `#1E88E5` | El blanco sobre `#1E88E5` da 3,6:1 y no cumple AA; `#2563EB` da 5,2:1. `#1E88E5` se mantiene en logo, acentos y bordes. |
 | Antetítulos y bajadas de sección reescritos | Los de Stitch hacían afirmaciones que no están en el brief ("sin cobros sorpresa", "flota propia monitoreada", "24 horas hábiles", "Pautas contractuales…"). |
-| Etiquetas amarillas `[FOTO: …]` sobre las fotos | Las tres fotos son imágenes generadas por Stitch, no fotos reales de MudaCol. El brief pide marcadores hasta tener las fotos reales. |
+| Fotos de banco (Pexels) en lugar de las de Stitch | Las de Stitch eran generadas por IA y mostraban uniformes "MudaCol" que no existen. El cliente aprobó fotos de banco (respuesta #18). |
 | Íconos de WhatsApp, Instagram y Facebook en SVG propio | No existen en Material Symbols (Stitch usaba `chat` y `send`). |
 | Animaciones (ver lista abajo) | Las pide el brief. Se desactivan con `prefers-reduced-motion` y solo animan `transform` y `opacity`. |
 
@@ -94,7 +94,7 @@ Regla aplicada: **Stitch manda en lo visual; el brief (`prompt_mudacol.md`) mand
 
 **12 · Contacto (cierre)**
 - Stitch no diseñó esta sección. Se creó con el degradado azul del brief (`#0D47A1` → `#1E88E5`, con una capa oscura del 20 % para el contraste AA) y las diagonales y botones del resto de la página.
-- Lleva los marcadores `[CIUDAD]`, `[CORREO]` y `[MAPA]`.
+- Lleva los marcadores `[CIUDAD]` y `[MAPA]`. El correo ya es el real (contacto@mudacol.com).
 
 **13 · Footer**
 - Columnas según el brief: marca con lema y redes, navegación, contacto (dirección, horario, correo) y formas de pago.

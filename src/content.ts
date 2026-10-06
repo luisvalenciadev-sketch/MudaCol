@@ -1,9 +1,11 @@
 // Todo el contenido editable de la landing de MudaCol.
-// Fuente: prompt_mudacol.md (brief del cliente). No agregar cifras, testimonios ni datos no confirmados.
+// Fuentes: prompt_mudacol.md (brief) y las respuestas del cliente del 5 de octubre de 2026
+// (resumen en docs/respuestas-cliente.md). No agregar cifras, testimonios ni datos no confirmados.
 // Los valores entre corchetes [ ] son marcadores pendientes de confirmar con el cliente.
 
 export const PLACEHOLDERS = {
-  correo: '[CORREO]',
+  razonSocial: '[RAZÓN SOCIAL]',
+  nit: '[NIT]',
   facebook: '[URL FACEBOOK]',
   ciudad: '[CIUDAD]',
   testimonios: '[TESTIMONIOS: pendiente]',
@@ -16,16 +18,21 @@ export const contact = {
   whatsappDisplay: '304 311 3824',
   whatsappNumber: WHATSAPP_NUMBER,
   phoneE164: '+573043113824',
+  /** Llamadas y WhatsApp usan el mismo número (respuesta del cliente #2) */
+  telUrl: 'tel:+573043113824',
+  callLabel: 'Llamar',
   whatsappUrl: `https://wa.me/${WHATSAPP_NUMBER}?text=Hola%20MudaCol%2C%20quiero%20cotizar%20mi%20mudanza`,
   address: 'Calle 156 # 7D-75',
   city: PLACEHOLDERS.ciudad,
-  email: PLACEHOLDERS.correo,
+  email: 'contacto@mudacol.com',
   instagramHandle: '@muda.col',
   instagramUrl: 'https://www.instagram.com/muda.col/',
   facebookName: 'MudaCol',
   facebookUrl: PLACEHOLDERS.facebook,
   schedule: 'Lunes a sábado, 8:00 a. m. – 7:00 p. m.',
   scheduleShort: 'Lun a Sáb: 8:00 a. m. – 7:00 p. m.',
+  /** Respuesta del cliente #12 */
+  holidays: 'Domingos y festivos: servicio con recargo',
   price: '$500.000 COP',
   payment: 'Efectivo o transferencia bancaria',
   responseTime: 'Respuesta en máximo 24 horas',
@@ -44,6 +51,13 @@ export const brand = {
   closing: '¡Nos mudamos contigo!',
   pillars: 'Servicio exclusivo · Servicio confiable · Local & Nacional',
 };
+
+/** Datos de confianza confirmados por el cliente (respuestas #7, #8 y #9). */
+export const trust = [
+  { icon: 'workspace_premium', value: '+10', label: 'años de experiencia en el sector de mudanzas' },
+  { icon: 'local_shipping', value: '25–50 m³', label: 'vehículos de 25 hasta 50 metros cúbicos' },
+  { icon: 'verified_user', value: 'Póliza', label: 'contamos con póliza de seguro de carga' },
+];
 
 export type NavItem = { id: string; label: string };
 
@@ -67,6 +81,7 @@ export const hero = {
   subtitle: 'Tu mudanza, en manos expertas. Llevamos contigo lo que más valoras.',
   badges: [
     { icon: null, label: 'Mudanzas nacionales dentro de Colombia', tone: 'neutral' },
+    { icon: 'workspace_premium', label: 'Más de 10 años de experiencia', tone: 'neutral' },
     { icon: 'local_shipping', label: 'Desde $500.000 COP', tone: 'blue' },
     { icon: 'verified', label: 'Cotización gratuita y sin compromiso', tone: 'green' },
   ] as const,
@@ -77,15 +92,15 @@ export const hero = {
     { icon: 'shield', label: 'Transporte seguro' },
     { icon: 'domain', label: 'Servicio empresarial y residencial' },
   ],
+  // Foto de banco (Pexels) aprobada por el cliente; créditos en design/images/pexels/CREDITOS.md
   image: {
     base: '/images/camion-furgon',
     widths: [640, 1024, 1376],
     width: 1376,
-    height: 768,
-    alt: 'Camión furgón blanco de mudanzas en una avenida de Colombia',
-    placeholder: '[FOTO: camion-1.jpg — camión furgón blanco de la flota]',
+    height: 917,
+    alt: 'Camión furgón blanco de mudanzas estacionado en una calle',
     captionTitle: 'Servicio exclusivo · Servicio confiable',
-    captionText: 'Tu mudanza, en manos expertas.',
+    captionText: 'Vehículos de 25 hasta 50 metros cúbicos.',
     captionChip: 'Local & Nacional',
   },
 };
@@ -99,21 +114,19 @@ export const about = {
   cards: [
     {
       image: '/images/personal-cargando',
-      widths: [640, 860],
-      width: 860,
-      height: 520,
-      alt: 'Dos personas de una empresa de mudanzas cargando una mesa de madera dentro de un apartamento',
-      placeholder: '[FOTO: personal cargando muebles]',
+      widths: [640, 960],
+      width: 960,
+      height: 640,
+      alt: 'Dos personas de una empresa de mudanzas cargando un sofá por la calle',
       title: 'Carga y descarga',
       text: 'Nuestro equipo se encarga de la carga en el origen y la descarga en el destino.',
     },
     {
       image: '/images/proteccion-muebles',
-      widths: [640, 1200],
-      width: 1200,
-      height: 655,
-      alt: 'Mueble de madera protegido con una manta acolchada y plástico durante una mudanza',
-      placeholder: '[FOTO: protección de muebles]',
+      widths: [640, 960],
+      width: 960,
+      height: 640,
+      alt: 'Persona cubriendo un sofá con plástico protector antes de una mudanza',
       title: 'Protección básica de muebles',
       text: 'Protección básica durante el traslado, según cada artículo y el servicio contratado.',
     },
@@ -212,6 +225,7 @@ export const pricing = {
   priceValue: 500000,
   currency: 'COP',
   text: 'El precio final depende de la distancia, volumen de la mudanza, condiciones de acceso, cantidad de personal y servicios adicionales requeridos.',
+  minNote: 'El precio mínimo aplica en todas las ciudades.',
   factorsTitle: 'Factores que influyen en tu cotización',
   factors: [
     { icon: 'location_city', label: 'Ciudad y zona de origen y destino' },
@@ -232,6 +246,7 @@ export const pricing = {
     { icon: 'check_circle', label: 'Cotización gratuita y sin compromiso' },
     { icon: 'schedule', label: 'Respuesta en máximo 24 horas' },
     { icon: 'payments', label: 'Pago en efectivo o transferencia bancaria' },
+    { icon: 'event', label: 'Domingos y festivos con recargo' },
   ],
 };
 
@@ -240,6 +255,12 @@ export const coverage = {
   title: 'Cobertura dentro de Colombia',
   subtitle: 'Realizamos mudanzas locales e intermunicipales con cobertura dentro de Colombia.',
   baseLabel: 'Ciudad base',
+  /** Sede principal (respuesta del cliente #5) */
+  mainBase: 'Bogotá',
+  mainBaseLabel: 'Sede principal',
+  /** Ruta principal a destacar (respuesta del cliente #6) */
+  featuredRoute: ['Bogotá', 'Medellín'] as const,
+  featuredRouteLabel: 'Ruta principal',
   bases: ['Bogotá', 'Medellín', 'Cali', 'Cartagena'],
   routesTitle: 'Rutas y destinos',
   routesText: 'También atendemos rutas y destinos hacia:',
@@ -273,7 +294,7 @@ export const steps = {
       title: 'Cuéntanos sobre tu mudanza',
       text: 'Origen, destino, fecha, inmueble, pertenencias y requerimientos especiales.',
     },
-    { title: 'Envíanos fotos o videos', text: 'Para conocer el volumen y las condiciones.' },
+    { title: 'Envíanos fotos o videos', text: 'Por WhatsApp, para conocer el volumen y las condiciones.' },
     { title: 'Recibe tu cotización', text: 'Gratuita y sin compromiso.' },
     { title: 'Confirma tu fecha', text: 'Al aceptar la cotización se confirman fecha y condiciones.' },
     { title: 'Nos encargamos de la mudanza', text: 'Carga, traslado y descarga según lo contratado.' },
@@ -287,7 +308,7 @@ export const steps = {
 export const quoteForm = {
   eyebrow: 'Cotización gratuita y sin compromiso',
   title: 'Solicita tu cotización',
-  subtitle: 'Completa los bloques a continuación. Te responderemos en máximo 24 horas.',
+  subtitle: 'Completa los bloques y envía tu solicitud por WhatsApp. Un asesor comercial te responderá en máximo 24 horas.',
   steps: ['Contacto', 'Mudanza', 'Inmueble', 'Pertenencias'],
   stepTitles: [
     { title: '1. Datos personales', text: '¿Con quién nos comunicamos para coordinar tu servicio?' },
@@ -328,14 +349,15 @@ export const quoteForm = {
     accessDetail: 'Describe la dificultad de acceso',
     furnitureCount: 'Cantidad aproximada de muebles',
     boxesCount: 'Cantidad aproximada de cajas',
-    specialItems: 'Marca lo que aplique',
+    specialItems: 'Declara tus artículos especiales, frágiles o de valor (marca lo que aplique)',
+    specialItemsHint: 'Los artículos frágiles o de valor deben declararse antes de la mudanza.',
     disassembly: '¿Necesita desmontaje y montaje?',
     packing: '¿Necesita servicio de empaque?',
     materials: '¿Necesita cajas o materiales de empaque?',
-    details: 'Cuéntanos cualquier detalle importante sobre tu mudanza',
-    files: 'Adjunta fotografías o videos de tus pertenencias y espacios',
-    filesHint: 'Puedes seleccionar o arrastrar varias imágenes y videos.',
-    filesButton: 'Seleccionar fotos o videos',
+    details: 'Cuéntanos cualquier detalle importante sobre tu mudanza (opcional)',
+    filesTitle: 'Fotos y videos',
+    filesInfo:
+      'Al enviar, se abrirá WhatsApp con tu solicitud. Adjunta ahí fotos o videos de tus pertenencias y espacios: nos ayudan a darte una cotización más precisa.',
     consent: 'Acepto la política de tratamiento de datos personales de MudaCol.',
   },
   specialItems: [
@@ -349,21 +371,33 @@ export const quoteForm = {
   no: 'No',
   next: 'Siguiente',
   back: 'Atrás',
-  submit: 'Solicitar cotización gratuita',
-  sending: 'Enviando…',
-  sendWhatsapp: 'Enviar por WhatsApp',
+  submit: 'Enviar solicitud por WhatsApp',
   required: 'Este campo es obligatorio.',
   invalidEmail: 'Escribe un correo válido.',
   invalidPhone: 'Escribe un número válido (mínimo 7 dígitos).',
   invalidDate: 'Elige una fecha a partir de hoy.',
+  invalidNumber: 'Escribe un número (0 o más).',
   consentRequired: 'Debes aceptar la política de tratamiento de datos.',
   errorSummary: 'Revisa los campos marcados para continuar.',
-  submitError: 'No pudimos enviar tu solicitud. Inténtalo de nuevo o escríbenos por WhatsApp.',
-  success: '¡Recibimos tu solicitud! Te responderemos en máximo 24 horas.',
-  successWhatsapp: 'Continuar por WhatsApp',
-  newRequest: 'Enviar otra solicitud',
-  removeFile: 'Quitar archivo',
+  successTitle: '¡Tu solicitud está lista en WhatsApp!',
+  success: 'Envía el mensaje en WhatsApp para completarla. Un asesor comercial te responderá en máximo 24 horas.',
+  successPhotos: 'Recuerda adjuntar en el chat las fotos o videos de tus pertenencias.',
+  successWhatsapp: 'Abrir WhatsApp de nuevo',
+  newRequest: 'Hacer otra solicitud',
   requiredHint: 'Los campos con * son obligatorios.',
+  /** Encabezados del mensaje que recibe el asesor por WhatsApp */
+  message: {
+    greeting: 'Hola MudaCol, quiero solicitar una cotización para mi mudanza.',
+    contact: 'DATOS DE CONTACTO',
+    move: 'MUDANZA',
+    property: 'INMUEBLE',
+    belongings: 'PERTENENCIAS',
+    special: 'Artículos declarados',
+    noSpecial: 'Ninguno',
+    details: 'Detalles',
+    photos: 'Adjunto fotos o videos en este chat.',
+    consent: 'Acepto la política de tratamiento de datos personales.',
+  },
 };
 
 export const policies = {
@@ -381,19 +415,19 @@ export const policies = {
       icon: 'diamond',
       tone: 'default',
       title: 'Objetos frágiles, delicados y de valor',
-      text: 'El cliente debe declararlos antes de la mudanza. Si se daña un objeto no declarado, MudaCol no asumirá responsabilidad.',
+      text: 'El cliente debe declararlos antes de la mudanza en el formulario de cotización. Si se daña un objeto no declarado, MudaCol no asumirá responsabilidad.',
     },
     {
       icon: 'verified_user',
       tone: 'default',
       title: 'Responsabilidad por daños',
-      text: 'MudaCol responde por daños causados directamente por su personal en artículos declarados y dentro de las condiciones contratadas. Cualquier daño debe informarse durante o al finalizar el servicio.',
+      text: 'MudaCol responde por daños causados directamente por su personal en artículos declarados y dentro de las condiciones contratadas. Al finalizar el servicio, nuestros auxiliares de carga revisan contigo que todo esté en buen estado; cualquier daño debe informarse durante el servicio o en esa revisión final. Contamos con póliza de seguro de carga.',
     },
     {
       icon: 'event_available',
       tone: 'default',
       title: 'Reserva y anticipo',
-      text: 'Para confirmar una fecha, MudaCol podrá solicitar un anticipo; su valor se informa al confirmar. Reserva recomendada con 24 a 72 horas de anticipación para mudanzas locales; las intermunicipales pueden requerir más.',
+      text: 'Mudanzas de ciudad a ciudad: para confirmar la fecha se paga un anticipo del 50%. Mudanzas dentro de la misma ciudad: el valor total se paga al finalizar el servicio. Reserva recomendada con 24 a 72 horas de anticipación para mudanzas locales; las intermunicipales pueden requerir más.',
     },
     {
       icon: 'home_work',
@@ -423,12 +457,16 @@ export const faq = {
   items: [
     {
       q: '¿Cuánto cuesta una mudanza con MudaCol?',
-      a: 'Las mudanzas tienen un precio mínimo de $500.000 COP. El precio final depende de la distancia, volumen, personal requerido, condiciones de acceso y servicios adicionales.',
+      a: 'Las mudanzas tienen un precio mínimo de $500.000 COP, que aplica en todas las ciudades. El precio final depende de la distancia, volumen, personal requerido, condiciones de acceso y servicios adicionales.',
     },
     { q: '¿La cotización tiene algún costo?', a: 'No. La cotización es gratuita y sin compromiso.' },
     { q: '¿Realizan mudanzas entre ciudades?', a: 'Sí. MudaCol realiza mudanzas dentro de Colombia.' },
     { q: '¿Realizan mudanzas internacionales?', a: 'Actualmente no ofrecemos mudanzas internacionales.' },
-    { q: '¿Puedo solicitar la cotización por WhatsApp?', a: 'Sí. Escríbenos al 304 311 3824.' },
+    { q: '¿Puedo solicitar la cotización por WhatsApp?', a: 'Sí. Escríbenos o llámanos al 304 311 3824.' },
+    {
+      q: '¿Atienden domingos y festivos?',
+      a: 'Sí, con recargo. Nuestro horario de atención es de lunes a sábado, de 8:00 a. m. a 7:00 p. m.',
+    },
     {
       q: '¿Necesitan visitar mi vivienda antes de cotizar?',
       a: 'No siempre. Muchas mudanzas pueden cotizarse mediante información, fotografías y videos. Para servicios grandes o complejos podemos solicitar una visita previa.',
@@ -448,13 +486,21 @@ export const faq = {
     },
     {
       q: '¿Transportan artículos frágiles o de valor?',
-      a: 'Sí, siempre que sean previamente declarados por el cliente y puedan ser transportados bajo las condiciones del servicio.',
+      a: 'Sí, siempre que sean previamente declarados por el cliente en el formulario de cotización y puedan ser transportados bajo las condiciones del servicio.',
     },
     {
       q: '¿Qué ocurre si no declaro un artículo frágil o de valor?',
       a: 'Los daños a artículos no declarados no serán responsabilidad de MudaCol.',
     },
     { q: '¿Qué formas de pago aceptan?', a: 'Efectivo y transferencia bancaria.' },
+    {
+      q: '¿Cuánto se paga de anticipo?',
+      a: 'En mudanzas de ciudad a ciudad, el 50% para confirmar la fecha. En mudanzas dentro de la misma ciudad no hay anticipo: el valor total se paga al finalizar el servicio.',
+    },
+    {
+      q: '¿Tienen seguro de carga?',
+      a: 'Sí. Contamos con póliza de seguro de carga. Las condiciones de responsabilidad se explican en nuestras políticas.',
+    },
     {
       q: '¿Puedo cancelar mi reserva?',
       a: 'Sí. Dentro de las primeras 24 horas desde la recepción de la cotización puedes optar por la devolución de tu anticipo. Después se devuelve el 50% y el 50% restante no es reembolsable.',
@@ -475,7 +521,7 @@ export const testimonials = {
   eyebrow: 'Clientes',
   title: 'Lo que dicen nuestros clientes',
   placeholder: PLACEHOLDERS.testimonios,
-  note: 'Este espacio se completará con testimonios reales de clientes de MudaCol.',
+  note: 'Este espacio se completará con testimonios reales de clientes de MudaCol (pendiente: recibir los textos autorizados).',
 };
 
 export const contactCta = {
@@ -494,5 +540,7 @@ export const footer = {
     { label: 'Términos del servicio', href: '#', pending: true },
   ],
   pendingLabel: '(página pendiente)',
+  /** Respuesta del cliente #1: se completa cuando la empresa esté registrada */
+  legalEntity: `${PLACEHOLDERS.razonSocial} · NIT ${PLACEHOLDERS.nit}`,
   copyright: '© 2026 MudaCol. Todos los derechos reservados.',
 };

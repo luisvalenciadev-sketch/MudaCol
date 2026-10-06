@@ -11,6 +11,11 @@ services:
       # Dominio público sin "/" final (Open Graph y JSON-LD). Completar cuando exista.
       - key: VITE_SITE_URL
         value: ""
+      # Medición: pegar los ID cuando el cliente los entregue
+      - key: VITE_GA_ID
+        value: ""
+      - key: VITE_META_PIXEL_ID
+        value: ""
     headers:
       # Los archivos de assets llevan hash en el nombre: se pueden cachear por un año
       - path: /assets/*

@@ -117,9 +117,8 @@ export function Hero() {
                   sizes="(min-width: 1280px) 500px, (min-width: 1024px) 40vw, 100vw"
                   alt={hero.image.alt}
                   priority
-                  className="photo-settle aspect-[16/10] h-auto w-full object-cover"
+                  className="photo-settle aspect-[16/10] h-auto w-full object-cover object-[50%_75%]"
                 />
-                <span className="placeholder-tag absolute left-3 top-3">{hero.image.placeholder}</span>
               </div>
               <figcaption className="flex items-center justify-between gap-3 border-t border-slate-800 bg-slate-900/95 p-4">
                 <span>

@@ -137,20 +137,27 @@ type YesNoFieldProps = {
   onChange: (value: YesNo) => void;
   yes: string;
   no: string;
+  required?: boolean;
+  error?: string;
   className?: string;
   children?: ReactNode;
 };
 
-/** Pregunta Sí/No como grupo de radios (navegable con flechas). */
-export function YesNoField({ id, legend, value, onChange, yes, no, className = '', children }: YesNoFieldProps) {
-  const opt = (v: Exclude<YesNo, ''>, text: string) => (
+/** Pregunta Sí/No como grupo de radios (navegable con flechas). El primer radio lleva el id para recibir el foco. */
+export function YesNoField({ id, legend, value, onChange, yes, no, required, error, className = '', children }: YesNoFieldProps) {
+  const opt = (v: Exclude<YesNo, ''>, text: string, first: boolean) => (
     <label
       className={`flex cursor-pointer items-center gap-2 rounded-lg border px-4 py-2 font-body text-sm transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand-blue ${
-        value === v ? 'border-brand-action bg-blue-50 font-semibold text-blue-900' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'
+        value === v
+          ? 'border-brand-action bg-blue-50 font-semibold text-blue-900'
+          : error
+            ? 'border-rose-500 bg-white text-slate-700'
+            : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'
       }`}
     >
       <input
         type="radio"
+        id={first ? id : undefined}
         name={id}
         value={v}
         checked={value === v}
@@ -162,11 +169,31 @@ export function YesNoField({ id, legend, value, onChange, yes, no, className = '
   );
   return (
     <fieldset className={className}>
-      <legend className="field-label">{legend}</legend>
-      <div className="flex flex-wrap gap-2">
-        {opt('si', yes)}
-        {opt('no', no)}
+      <legend id={`${id}-legend`} className="field-label">
+        {legend}
+        {required && (
+          <span className="text-rose-700" aria-hidden="true">
+            {' '}
+            *
+          </span>
+        )}
+      </legend>
+      <div
+        role="radiogroup"
+        aria-labelledby={`${id}-legend`}
+        aria-required={required || undefined}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${id}-error` : undefined}
+        className="flex flex-wrap gap-2"
+      >
+        {opt('si', yes, true)}
+        {opt('no', no, false)}
       </div>
+      {error && (
+        <p id={`${id}-error`} className="field-error">
+          {error}
+        </p>
+      )}
       {children}
     </fieldset>
   );

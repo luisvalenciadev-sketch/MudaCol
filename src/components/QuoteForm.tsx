@@ -1,15 +1,14 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { quoteForm as t } from '../content';
 import { ARRIVE_EVENT, type ArriveDetail } from '../utils/scrollToSection';
-import { buildWhatsappQuoteLink, submitQuote, type QuoteData, type SpecialItemKey } from '../services/quote';
+import { buildWhatsappQuoteLink, sendQuote, type QuoteData, type SpecialItemKey } from '../services/quote';
 import { Checkbox, SelectField, TextField, YesNoField } from './form/Fields';
-import { FileUpload } from './form/FileUpload';
 import { WhatsAppIcon } from './ui/BrandIcons';
 import { Icon } from './ui/Icon';
 import { SectionHeader } from './ui/SectionHeader';
 
 type Errors = Partial<Record<string, string>>;
-type Status = 'idle' | 'sending' | 'success' | 'error';
+type Status = 'idle' | 'sent';
 
 const initialData = (): QuoteData => ({
   fullName: '',
@@ -43,7 +42,6 @@ const initialData = (): QuoteData => ({
   packing: '',
   materials: '',
   details: '',
-  files: [],
   consent: false,
 });
 
@@ -54,27 +52,63 @@ const todayISO = () => {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const validPhone = (v: string) => v.replace(/\D/g, '').length >= 7;
+const validCount = (v: string) => /^\d+$/.test(v.trim());
 
-/** Valida un paso y devuelve los errores en el orden de los campos. */
+/**
+ * Valida un paso y devuelve los errores en el orden de los campos.
+ * Decisión del cliente (respuesta #29): todos los campos son obligatorios. Excepciones:
+ * el campo libre "detalles" (opcional) y las casillas de artículos declarados (se marcan solo si aplican;
+ * si se marca una, su detalle es obligatorio).
+ */
 function validateStep(step: number, d: QuoteData): Errors {
   const e: Errors = {};
+  const req = (key: keyof QuoteData & string, value: string) => {
+    if (!value.trim()) e[key] = t.required;
+  };
+  const count = (key: keyof QuoteData & string, value: string) => {
+    if (!value.trim()) e[key] = t.required;
+    else if (!validCount(value)) e[key] = t.invalidNumber;
+  };
+
   if (step === 0) {
-    if (!d.fullName.trim()) e.fullName = t.required;
+    req('fullName', d.fullName);
     if (!d.phone.trim()) e.phone = t.required;
     else if (!validPhone(d.phone)) e.phone = t.invalidPhone;
     if (!d.whatsapp.trim()) e.whatsapp = t.required;
     else if (!validPhone(d.whatsapp)) e.whatsapp = t.invalidPhone;
-    if (d.email.trim() && !EMAIL_RE.test(d.email.trim())) e.email = t.invalidEmail;
+    if (!d.email.trim()) e.email = t.required;
+    else if (!EMAIL_RE.test(d.email.trim())) e.email = t.invalidEmail;
   }
   if (step === 1) {
-    if (!d.originCity) e.originCity = t.required;
-    else if (d.originCity === t.otherCity && !d.originCityOther.trim()) e.originCityOther = t.required;
-    if (!d.destCity) e.destCity = t.required;
-    else if (d.destCity === t.otherCity && !d.destCityOther.trim()) e.destCityOther = t.required;
+    req('originCity', d.originCity);
+    if (d.originCity === t.otherCity) req('originCityOther', d.originCityOther);
+    req('originZone', d.originZone);
+    req('destCity', d.destCity);
+    if (d.destCity === t.otherCity) req('destCityOther', d.destCityOther);
+    req('destZone', d.destZone);
     if (!d.date) e.date = t.required;
     else if (d.date < todayISO()) e.date = t.invalidDate;
   }
+  if (step === 2) {
+    req('propertyType', d.propertyType);
+    count('rooms', d.rooms);
+    count('originFloor', d.originFloor);
+    count('destFloor', d.destFloor);
+    req('elevator', d.elevator);
+    req('stairs', d.stairs);
+    req('accessDifficulty', d.accessDifficulty);
+    if (d.accessDifficulty === 'si') req('accessDetail', d.accessDetail);
+  }
   if (step === 3) {
+    count('furnitureCount', d.furnitureCount);
+    count('boxesCount', d.boxesCount);
+    for (const s of t.specialItems) {
+      const item = d.specialItems[s.key];
+      if (item.checked && !item.detail.trim()) e[`special-${s.key}-detail`] = t.required;
+    }
+    req('disassembly', d.disassembly);
+    req('packing', d.packing);
+    req('materials', d.materials);
     if (!d.consent) e.consent = t.consentRequired;
   }
   return e;
@@ -130,7 +164,7 @@ export function QuoteForm() {
   }, [step]);
 
   useEffect(() => {
-    if (status === 'success') successRef.current?.focus();
+    if (status === 'sent') successRef.current?.focus();
   }, [status]);
 
   const set = <K extends keyof QuoteData>(key: K, value: QuoteData[K]) => {
@@ -138,8 +172,11 @@ export function QuoteForm() {
     if (errors[key as string]) setErrors((e) => ({ ...e, [key]: undefined }));
   };
 
-  const setSpecial = (key: SpecialItemKey, patch: Partial<{ checked: boolean; detail: string }>) =>
+  const setSpecial = (key: SpecialItemKey, patch: Partial<{ checked: boolean; detail: string }>) => {
     setData((d) => ({ ...d, specialItems: { ...d.specialItems, [key]: { ...d.specialItems[key], ...patch } } }));
+    const errKey = `special-${key}-detail`;
+    if (errors[errKey]) setErrors((e) => ({ ...e, [errKey]: undefined }));
+  };
 
   const focusFirstError = (errs: Errors) => {
     const first = Object.keys(errs).find((k) => errs[k]);
@@ -159,7 +196,8 @@ export function QuoteForm() {
     goTo(step + 1);
   };
 
-  const onSubmit = async (e: FormEvent) => {
+  // Sincrónico a propósito: WhatsApp se abre en el mismo gesto del usuario para que el navegador no lo bloquee
+  const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (step < STEP_COUNT - 1) return next();
     // Valida todos los pasos; si alguno falla, vuelve a ese paso
@@ -171,13 +209,8 @@ export function QuoteForm() {
         return focusFirstError(errs);
       }
     }
-    setStatus('sending');
-    try {
-      const res = await submitQuote(data);
-      setStatus(res.ok ? 'success' : 'error');
-    } catch {
-      setStatus('error');
-    }
+    sendQuote(data);
+    setStatus('sent');
   };
 
   const reset = () => {
@@ -188,9 +221,17 @@ export function QuoteForm() {
     setMaxStep(0);
   };
 
-  const whatsappHref = buildWhatsappQuoteLink(data);
   const hasErrors = Object.values(errors).some(Boolean);
   const field = (k: string) => ({ id: `q-${k}`, error: errors[k] });
+  const yesNo = (k: 'elevator' | 'stairs' | 'accessDifficulty' | 'disassembly' | 'packing' | 'materials') => ({
+    ...field(k),
+    legend: t.labels[k],
+    yes: t.yes,
+    no: t.no,
+    required: true,
+    value: data[k],
+    onChange: (v: QuoteData[typeof k]) => set(k, v),
+  });
 
   return (
     <section
@@ -209,14 +250,19 @@ export function QuoteForm() {
             attention ? 'form-attention border-brand-action' : 'border-slate-300'
           }`}
         >
-          {status === 'success' ? (
-            <div ref={successRef} tabIndex={-1} role="status" className="step-in flex flex-col items-center gap-5 py-8 text-center focus:outline-none">
+          {status === 'sent' ? (
+            <div ref={successRef} tabIndex={-1} role="status" className="step-in flex flex-col items-center gap-4 py-8 text-center focus:outline-none">
               <span className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
-                <Icon name="task_alt" className="text-[36px]" />
+                <WhatsAppIcon className="h-9 w-9" />
               </span>
-              <p className="max-w-lg font-headline text-2xl font-bold uppercase text-slate-900">{t.success}</p>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="btn-whatsapp btn-md">
+              <p className="max-w-lg font-headline text-2xl font-bold uppercase text-slate-900">{t.successTitle}</p>
+              <p className="max-w-lg font-body text-base text-slate-700">{t.success}</p>
+              <p className="flex max-w-lg items-start gap-2 rounded-lg bg-blue-50 p-3 text-left font-body text-sm text-blue-900">
+                <Icon name="photo_camera" className="mt-0.5 text-[20px] text-brand-action" />
+                {t.successPhotos}
+              </p>
+              <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+                <a href={buildWhatsappQuoteLink(data)} target="_blank" rel="noopener noreferrer" className="btn-whatsapp btn-md">
                   <WhatsAppIcon className="h-5 w-5" />
                   {t.successWhatsapp}
                 </a>
@@ -301,118 +347,115 @@ export function QuoteForm() {
 
                 {/* key={step}: cada paso entra con una transición corta */}
                 <div key={step} className="step-in">
-                {step === 0 && (
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <TextField {...field('fullName')} label={t.labels.fullName} placeholder={t.placeholders.fullName} required autoComplete="name" value={data.fullName} onChange={(v) => set('fullName', v)} />
-                    <TextField {...field('phone')} label={t.labels.phone} placeholder={t.placeholders.phone} required type="tel" inputMode="tel" autoComplete="tel" value={data.phone} onChange={(v) => set('phone', v)} />
-                    <TextField {...field('whatsapp')} label={t.labels.whatsapp} placeholder={t.placeholders.whatsapp} required type="tel" inputMode="tel" value={data.whatsapp} onChange={(v) => set('whatsapp', v)} />
-                    <TextField {...field('email')} label={t.labels.email} placeholder={t.placeholders.email} type="email" inputMode="email" autoComplete="email" value={data.email} onChange={(v) => set('email', v)} />
-                  </div>
-                )}
-
-                {step === 1 && (
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <SelectField {...field('originCity')} label={t.labels.originCity} required placeholder={t.selectPlaceholder} options={[...t.cities, t.otherCity]} value={data.originCity} onChange={(v) => set('originCity', v)} />
-                    {data.originCity === t.otherCity ? (
-                      <TextField {...field('originCityOther')} label={t.labels.originCityOther} required value={data.originCityOther} onChange={(v) => set('originCityOther', v)} />
-                    ) : (
-                      <TextField {...field('originZone')} label={t.labels.originZone} placeholder={t.zonePlaceholder} value={data.originZone} onChange={(v) => set('originZone', v)} />
-                    )}
-                    {data.originCity === t.otherCity && (
-                      <TextField {...field('originZone')} label={t.labels.originZone} placeholder={t.zonePlaceholder} className="sm:col-span-2" value={data.originZone} onChange={(v) => set('originZone', v)} />
-                    )}
-                    <SelectField {...field('destCity')} label={t.labels.destCity} required placeholder={t.selectPlaceholder} options={[...t.cities, t.otherCity]} value={data.destCity} onChange={(v) => set('destCity', v)} />
-                    {data.destCity === t.otherCity ? (
-                      <TextField {...field('destCityOther')} label={t.labels.destCityOther} required value={data.destCityOther} onChange={(v) => set('destCityOther', v)} />
-                    ) : (
-                      <TextField {...field('destZone')} label={t.labels.destZone} placeholder={t.zonePlaceholder} value={data.destZone} onChange={(v) => set('destZone', v)} />
-                    )}
-                    {data.destCity === t.otherCity && (
-                      <TextField {...field('destZone')} label={t.labels.destZone} placeholder={t.zonePlaceholder} className="sm:col-span-2" value={data.destZone} onChange={(v) => set('destZone', v)} />
-                    )}
-                    <TextField {...field('date')} label={t.labels.date} required type="date" min={todayISO()} value={data.date} onChange={(v) => set('date', v)} />
-                  </div>
-                )}
-
-                {step === 2 && (
-                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                    <SelectField {...field('propertyType')} label={t.labels.propertyType} placeholder={t.selectPlaceholder} options={t.propertyTypes} value={data.propertyType} onChange={(v) => set('propertyType', v)} />
-                    <TextField {...field('rooms')} label={t.labels.rooms} type="number" inputMode="numeric" min="0" value={data.rooms} onChange={(v) => set('rooms', v)} />
-                    <TextField {...field('originFloor')} label={t.labels.originFloor} type="number" inputMode="numeric" min="0" value={data.originFloor} onChange={(v) => set('originFloor', v)} />
-                    <TextField {...field('destFloor')} label={t.labels.destFloor} type="number" inputMode="numeric" min="0" value={data.destFloor} onChange={(v) => set('destFloor', v)} />
-                    <YesNoField id="q-elevator" legend={t.labels.elevator} yes={t.yes} no={t.no} value={data.elevator} onChange={(v) => set('elevator', v)} />
-                    <YesNoField id="q-stairs" legend={t.labels.stairs} yes={t.yes} no={t.no} value={data.stairs} onChange={(v) => set('stairs', v)} />
-                    <YesNoField id="q-accessDifficulty" legend={t.labels.accessDifficulty} yes={t.yes} no={t.no} value={data.accessDifficulty} onChange={(v) => set('accessDifficulty', v)} className="sm:col-span-2">
-                      {data.accessDifficulty === 'si' && (
-                        <TextField {...field('accessDetail')} label={t.labels.accessDetail} className="mt-3" multiline value={data.accessDetail} onChange={(v) => set('accessDetail', v)} />
-                      )}
-                    </YesNoField>
-                  </div>
-                )}
-
-                {step === 3 && (
-                  <div className="space-y-6">
+                  {step === 0 && (
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <TextField {...field('furnitureCount')} label={t.labels.furnitureCount} type="number" inputMode="numeric" min="0" value={data.furnitureCount} onChange={(v) => set('furnitureCount', v)} />
-                      <TextField {...field('boxesCount')} label={t.labels.boxesCount} type="number" inputMode="numeric" min="0" value={data.boxesCount} onChange={(v) => set('boxesCount', v)} />
+                      <TextField {...field('fullName')} label={t.labels.fullName} placeholder={t.placeholders.fullName} required autoComplete="name" value={data.fullName} onChange={(v) => set('fullName', v)} />
+                      <TextField {...field('phone')} label={t.labels.phone} placeholder={t.placeholders.phone} required type="tel" inputMode="tel" autoComplete="tel" value={data.phone} onChange={(v) => set('phone', v)} />
+                      <TextField {...field('whatsapp')} label={t.labels.whatsapp} placeholder={t.placeholders.whatsapp} required type="tel" inputMode="tel" value={data.whatsapp} onChange={(v) => set('whatsapp', v)} />
+                      <TextField {...field('email')} label={t.labels.email} placeholder={t.placeholders.email} required type="email" inputMode="email" autoComplete="email" value={data.email} onChange={(v) => set('email', v)} />
                     </div>
+                  )}
 
-                    <fieldset>
-                      <legend className="field-label">{t.labels.specialItems}</legend>
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        {t.specialItems.map((s) => {
-                          const item = data.specialItems[s.key];
-                          return (
-                            <div key={s.key} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                              <Checkbox id={`q-special-${s.key}`} checked={item.checked} onChange={(c) => setSpecial(s.key, { checked: c })}>
-                                {s.label}
-                              </Checkbox>
-                              {item.checked && (
-                                <TextField
-                                  id={`q-special-${s.key}-detail`}
-                                  label={`${t.specialDetailLabel}: ${s.label.toLowerCase()}`}
-                                  className="mt-2"
-                                  value={item.detail}
-                                  onChange={(v) => setSpecial(s.key, { detail: v })}
-                                />
-                              )}
-                            </div>
-                          );
-                        })}
+                  {step === 1 && (
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <SelectField {...field('originCity')} label={t.labels.originCity} required placeholder={t.selectPlaceholder} options={[...t.cities, t.otherCity]} value={data.originCity} onChange={(v) => set('originCity', v)} />
+                      {data.originCity === t.otherCity ? (
+                        <TextField {...field('originCityOther')} label={t.labels.originCityOther} required value={data.originCityOther} onChange={(v) => set('originCityOther', v)} />
+                      ) : (
+                        <TextField {...field('originZone')} label={t.labels.originZone} required placeholder={t.zonePlaceholder} value={data.originZone} onChange={(v) => set('originZone', v)} />
+                      )}
+                      {data.originCity === t.otherCity && (
+                        <TextField {...field('originZone')} label={t.labels.originZone} required placeholder={t.zonePlaceholder} className="sm:col-span-2" value={data.originZone} onChange={(v) => set('originZone', v)} />
+                      )}
+                      <SelectField {...field('destCity')} label={t.labels.destCity} required placeholder={t.selectPlaceholder} options={[...t.cities, t.otherCity]} value={data.destCity} onChange={(v) => set('destCity', v)} />
+                      {data.destCity === t.otherCity ? (
+                        <TextField {...field('destCityOther')} label={t.labels.destCityOther} required value={data.destCityOther} onChange={(v) => set('destCityOther', v)} />
+                      ) : (
+                        <TextField {...field('destZone')} label={t.labels.destZone} required placeholder={t.zonePlaceholder} value={data.destZone} onChange={(v) => set('destZone', v)} />
+                      )}
+                      {data.destCity === t.otherCity && (
+                        <TextField {...field('destZone')} label={t.labels.destZone} required placeholder={t.zonePlaceholder} className="sm:col-span-2" value={data.destZone} onChange={(v) => set('destZone', v)} />
+                      )}
+                      <TextField {...field('date')} label={t.labels.date} required type="date" min={todayISO()} value={data.date} onChange={(v) => set('date', v)} />
+                    </div>
+                  )}
+
+                  {step === 2 && (
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                      <SelectField {...field('propertyType')} label={t.labels.propertyType} required placeholder={t.selectPlaceholder} options={t.propertyTypes} value={data.propertyType} onChange={(v) => set('propertyType', v)} />
+                      <TextField {...field('rooms')} label={t.labels.rooms} required type="number" inputMode="numeric" min="0" value={data.rooms} onChange={(v) => set('rooms', v)} />
+                      <TextField {...field('originFloor')} label={t.labels.originFloor} required type="number" inputMode="numeric" min="0" value={data.originFloor} onChange={(v) => set('originFloor', v)} />
+                      <TextField {...field('destFloor')} label={t.labels.destFloor} required type="number" inputMode="numeric" min="0" value={data.destFloor} onChange={(v) => set('destFloor', v)} />
+                      <YesNoField {...yesNo('elevator')} />
+                      <YesNoField {...yesNo('stairs')} />
+                      <YesNoField {...yesNo('accessDifficulty')} className="sm:col-span-2">
+                        {data.accessDifficulty === 'si' && (
+                          <TextField {...field('accessDetail')} label={t.labels.accessDetail} required className="mt-3" multiline value={data.accessDetail} onChange={(v) => set('accessDetail', v)} />
+                        )}
+                      </YesNoField>
+                    </div>
+                  )}
+
+                  {step === 3 && (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <TextField {...field('furnitureCount')} label={t.labels.furnitureCount} required type="number" inputMode="numeric" min="0" value={data.furnitureCount} onChange={(v) => set('furnitureCount', v)} />
+                        <TextField {...field('boxesCount')} label={t.labels.boxesCount} required type="number" inputMode="numeric" min="0" value={data.boxesCount} onChange={(v) => set('boxesCount', v)} />
                       </div>
-                    </fieldset>
 
-                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-                      <YesNoField id="q-disassembly" legend={t.labels.disassembly} yes={t.yes} no={t.no} value={data.disassembly} onChange={(v) => set('disassembly', v)} />
-                      <YesNoField id="q-packing" legend={t.labels.packing} yes={t.yes} no={t.no} value={data.packing} onChange={(v) => set('packing', v)} />
-                      <YesNoField id="q-materials" legend={t.labels.materials} yes={t.yes} no={t.no} value={data.materials} onChange={(v) => set('materials', v)} />
+                      {/* Declaración de artículos (respuesta del cliente #42: se declaran en el formulario) */}
+                      <fieldset aria-describedby="q-special-hint">
+                        <legend className="field-label">{t.labels.specialItems}</legend>
+                        <p id="q-special-hint" className="mb-2 font-body text-xs text-slate-600">
+                          {t.labels.specialItemsHint}
+                        </p>
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          {t.specialItems.map((s) => {
+                            const item = data.specialItems[s.key];
+                            return (
+                              <div key={s.key} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                                <Checkbox id={`q-special-${s.key}`} checked={item.checked} onChange={(c) => setSpecial(s.key, { checked: c })}>
+                                  {s.label}
+                                </Checkbox>
+                                {item.checked && (
+                                  <TextField
+                                    {...field(`special-${s.key}-detail`)}
+                                    label={`${t.specialDetailLabel}: ${s.label.toLowerCase()}`}
+                                    required
+                                    className="mt-2"
+                                    value={item.detail}
+                                    onChange={(v) => setSpecial(s.key, { detail: v })}
+                                  />
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </fieldset>
+
+                      <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+                        <YesNoField {...yesNo('disassembly')} />
+                        <YesNoField {...yesNo('packing')} />
+                        <YesNoField {...yesNo('materials')} />
+                      </div>
+
+                      <TextField {...field('details')} label={t.labels.details} multiline value={data.details} onChange={(v) => set('details', v)} />
+
+                      {/* Fotos y videos: se adjuntan en el chat de WhatsApp (respuesta del cliente #25) */}
+                      <div className="flex items-start gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4">
+                        <Icon name="photo_camera" className="mt-0.5 text-[22px] text-brand-action" />
+                        <p className="font-body text-sm text-blue-950">
+                          <strong className="block font-headline text-sm uppercase tracking-wider text-blue-800">{t.labels.filesTitle}</strong>
+                          {t.labels.filesInfo}
+                        </p>
+                      </div>
+
+                      <Checkbox id="q-consent" required checked={data.consent} onChange={(c) => set('consent', c)} error={errors.consent}>
+                        {t.labels.consent} <span className="text-rose-700" aria-hidden="true">*</span>
+                      </Checkbox>
                     </div>
-
-                    <TextField {...field('details')} label={t.labels.details} multiline value={data.details} onChange={(v) => set('details', v)} />
-
-                    <FileUpload
-                      id="q-files"
-                      label={t.labels.files}
-                      hint={t.labels.filesHint}
-                      buttonLabel={t.labels.filesButton}
-                      removeLabel={t.removeFile}
-                      files={data.files}
-                      onChange={(f) => set('files', f)}
-                    />
-
-                    <Checkbox id="q-consent" required checked={data.consent} onChange={(c) => set('consent', c)} error={errors.consent}>
-                      {t.labels.consent} <span className="text-rose-700" aria-hidden="true">*</span>
-                    </Checkbox>
-                  </div>
-                )}
-
+                  )}
                 </div>
-
-                {status === 'error' && (
-                  <p role="alert" className="mt-5 rounded-lg border border-rose-200 bg-rose-50 p-3 font-body text-sm text-rose-800">
-                    {t.submitError}
-                  </p>
-                )}
 
                 <div className="mt-8 flex flex-col-reverse gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
                   {step > 0 ? (
@@ -430,15 +473,10 @@ export function QuoteForm() {
                       <Icon name="arrow_forward" className="text-[18px]" />
                     </button>
                   ) : (
-                    <div className="flex flex-col gap-3 sm:flex-row">
-                      <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="btn-whatsapp btn-md">
-                        <WhatsAppIcon className="h-5 w-5" />
-                        {t.sendWhatsapp}
-                      </a>
-                      <button type="submit" disabled={status === 'sending'} className="btn-primary btn-md shadow-sm disabled:cursor-wait disabled:opacity-70">
-                        {status === 'sending' ? t.sending : t.submit}
-                      </button>
-                    </div>
+                    <button type="submit" className="btn-whatsapp btn-md">
+                      <WhatsAppIcon className="h-5 w-5" />
+                      {t.submit}
+                    </button>
                   )}
                 </div>
               </form>

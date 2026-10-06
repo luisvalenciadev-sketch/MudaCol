@@ -58,11 +58,17 @@ export function Footer() {
               <li className="flex items-start gap-2">
                 <WhatsAppIcon className="mt-0.5 h-[18px] w-[18px] shrink-0 text-brand-green" />
                 <span>
-                  WhatsApp:{' '}
+                  WhatsApp y llamadas:{' '}
                   <a href={contact.whatsappUrl} target="_blank" rel="noopener noreferrer" className="font-bold text-white hover:underline">
                     {contact.whatsappDisplay}
                   </a>
                 </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Icon name="call" className="mt-0.5 text-[18px] text-blue-400" />
+                <a href={contact.telUrl} className="hover:text-white hover:underline">
+                  {contact.callLabel} al {contact.whatsappDisplay}
+                </a>
               </li>
               <li className="flex items-start gap-2">
                 <Icon name="location_on" className="mt-0.5 text-[18px] text-blue-400" />
@@ -72,11 +78,16 @@ export function Footer() {
               </li>
               <li className="flex items-start gap-2">
                 <Icon name="schedule" className="mt-0.5 text-[18px] text-blue-400" />
-                <span>{contact.schedule}</span>
+                <span>
+                  {contact.schedule}
+                  <span className="block text-xs text-slate-400">{contact.holidays}</span>
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <Icon name="mail" className="mt-0.5 text-[18px] text-blue-400" />
-                <span className="placeholder-tag">{contact.email}</span>
+                <a href={`mailto:${contact.email}`} className="hover:text-white hover:underline">
+                  {contact.email}
+                </a>
               </li>
             </ul>
           </div>
@@ -95,7 +106,13 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col items-center justify-between gap-4 pt-8 text-center font-body text-xs text-slate-400 sm:flex-row sm:text-left">
-          <p>{footer.copyright}</p>
+          <div className="space-y-1">
+            <p>{footer.copyright}</p>
+            {/* Razón social y NIT: pendientes hasta que la empresa quede registrada (respuesta del cliente #1) */}
+            <p>
+              <span className="placeholder-tag">{footer.legalEntity}</span>
+            </p>
+          </div>
           <ul className="flex flex-wrap justify-center gap-x-5 gap-y-2">
             {footer.legal.map((l) => (
               <li key={l.label}>

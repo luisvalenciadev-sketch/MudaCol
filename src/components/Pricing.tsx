@@ -33,6 +33,10 @@ export function Pricing() {
               </span>
             </h2>
             <p className="mt-4 font-body text-base leading-relaxed text-slate-300 sm:text-lg">{pricing.text}</p>
+            <p className="mt-3 inline-flex items-center gap-2 font-body text-sm font-semibold text-blue-200">
+              <Icon name="location_city" className="text-[18px] text-blue-400" />
+              {pricing.minNote}
+            </p>
           </div>
 
           <div className="relative mt-8 border-t border-slate-700/60 pt-6">

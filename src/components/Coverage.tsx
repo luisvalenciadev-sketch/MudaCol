@@ -14,6 +14,10 @@ const CITIES: MapCity[] = [
   })),
 ];
 
+/** Etiqueta de cada ciudad: Bogotá es la sede principal (respuesta del cliente #5) */
+const labelOf = (name: string, kind: MapCity['kind']) =>
+  name === coverage.mainBase ? coverage.mainBaseLabel : kind === 'base' ? coverage.selectedBase : coverage.selectedDestination;
+
 export function Coverage() {
   const [hovered, setHovered] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
@@ -46,9 +50,7 @@ export function Coverage() {
             <Icon name={kind === 'base' ? 'location_on' : 'local_shipping'} className="text-[22px]" />
           </span>
           <span className="min-w-0">
-            <span className="block font-body text-[11px] font-bold uppercase tracking-wider text-blue-700">
-              {kind === 'base' ? coverage.selectedBase : coverage.selectedDestination}
-            </span>
+            <span className="block font-body text-[11px] font-bold uppercase tracking-wider text-blue-700">{labelOf(name, kind)}</span>
             <span className="block font-headline text-lg font-bold uppercase leading-tight text-slate-900">{name}</span>
           </span>
         </button>
@@ -77,6 +79,11 @@ export function Coverage() {
             {coverage.title}
           </h2>
           <p className="mt-3 font-body text-base leading-relaxed text-slate-600 sm:text-lg">{coverage.subtitle}</p>
+          {/* Ruta principal (respuesta del cliente #6) */}
+          <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 font-headline text-sm uppercase tracking-wider text-blue-900">
+            <Icon name="route" className="text-[18px] text-brand-action" />
+            {coverage.featuredRouteLabel}: {coverage.featuredRoute.join(' ⇄ ')}
+          </p>
         </Reveal>
 
         {/* Mapa */}
@@ -113,7 +120,7 @@ export function Coverage() {
                     activeCity ? 'border-blue-500/50 bg-blue-500/15 text-blue-200 opacity-100' : 'border-transparent opacity-0'
                   }`}
                 >
-                  {activeCity ? `${activeCity.name} · ${activeCity.kind === 'base' ? coverage.selectedBase : coverage.selectedDestination}` : ''}
+                  {activeCity ? `${activeCity.name} · ${labelOf(activeCity.name, activeCity.kind)}` : ''}
                 </p>
               </div>
 
@@ -125,6 +132,7 @@ export function Coverage() {
                   cities={CITIES}
                   active={active}
                   onHover={setHovered}
+                  featured={coverage.featuredRoute[1]}
                   drawn={mapInView}
                 />
               </div>
