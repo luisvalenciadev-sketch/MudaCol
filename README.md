@@ -116,11 +116,9 @@ y `contact`).
 
 | Marcador | Dónde aparece | Qué falta |
 |---|---|---|
-| `[CIUDAD]` | Contacto, footer | Ciudad de la dirección Calle 156 # 7D-75 (probablemente Bogotá). Al confirmarla, agrega también `addressLocality` al JSON-LD de `index.html`. |
 | `[RAZÓN SOCIAL] · NIT [NIT]` | Footer | Datos de la empresa cuando quede registrada |
 | `[URL FACEBOOK]` | Footer | Enlace a la página de Facebook |
 | `[TESTIMONIOS: pendiente]` | Sección de testimonios | Testimonios reales con autorización del cliente |
-| `[MAPA]` | Contacto | Mapa embebido de la dirección, cuando se confirme la ciudad |
 | Fotos | Inicio, Quiénes somos | Hoy son fotos de banco de Pexels aprobadas por el cliente (`design/images/pexels/CREDITOS.md`); reemplazar por fotos propias cuando existan |
 | Logo | Header, hero, footer | El logo es la recreación en SVG de Stitch (`src/components/ui/Logo.tsx`); reemplazar por el archivo oficial en vector |
 | `VITE_SITE_URL` | `.env` / Render | Dominio definitivo (Open Graph y JSON-LD usan rutas relativas mientras tanto) |

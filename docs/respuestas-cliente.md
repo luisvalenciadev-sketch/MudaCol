@@ -10,6 +10,7 @@ Los textos están en `src/content.ts`.
 | 1 | Razón social y NIT aún no existen; dejar el espacio | Pie de página: marcador `[RAZÓN SOCIAL] · NIT [NIT]` |
 | 2 | Llamadas al mismo número del WhatsApp | Botón "Llamar" (304 311 3824) en Contacto y pie de página |
 | 3 | Correo `contacto@mudacol.com` | Contacto, pie de página y JSON-LD |
+| 4 | Dirección en Usaquén, Bogotá D.C. | Contacto y pie de página ("Calle 156 # 7D-75, Usaquén, Bogotá"), mapa de Google en Contacto y JSON-LD |
 | 5 | Sede principal en Bogotá | Cobertura: Bogotá aparece como "Sede principal" |
 | 6 | Ciudades principales: Bogotá y Medellín | Cobertura: "Ruta principal: Bogotá ⇄ Medellín", resaltada en el mapa |
 | 7 | Vehículos de 25 a 50 m³ | Quiénes somos (cifras) y pie de la foto del inicio |
@@ -42,7 +43,6 @@ Los textos están en `src/content.ts`.
 
 | # | Qué falta | Por qué importa |
 |---|---|---|
-| 4 | Ciudad de la dirección Calle 156 # 7D-75 (¿Bogotá, por ser la sede principal?) | Se muestra `[CIUDAD]` en Contacto y pie de página, y falta en el JSON-LD |
 | 15 | Logo en vector (SVG, AI o PDF) | Hoy se usa la recreación de Stitch |
 | 17 | Fotos propias de los camiones (las de Instagram) en buena resolución | Reemplazarían la foto de banco del inicio |
 | 19 | Enlace de la página de Facebook | Pie de página: `[URL FACEBOOK]` |

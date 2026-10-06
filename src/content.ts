@@ -16,9 +16,7 @@ export const PLACEHOLDERS = {
   razonSocial: '[RAZÓN SOCIAL]',
   nit: '[NIT]',
   facebook: '[URL FACEBOOK]',
-  ciudad: '[CIUDAD]',
   testimonios: '[TESTIMONIOS: pendiente]',
-  mapa: '[MAPA]',
 } as const;
 
 const WHATSAPP_NUMBER = '573043113824';
@@ -32,9 +30,10 @@ export const contact = {
   callLabel: 'Llamar',
   whatsappUrl: `https://wa.me/${WHATSAPP_NUMBER}?text=Hola%20MudaCol%2C%20quiero%20cotizar%20mi%20mudanza`,
   address: 'Calle 156 # 7D-75',
-  city: PLACEHOLDERS.ciudad,
+  /** Respuesta del cliente #4: localidad de Usaquén, Bogotá D.C. */
+  city: 'Usaquén, Bogotá',
   /** URL de Google Maps para insertar (Compartir → Insertar un mapa → copiar el src). Vacío = sin mapa. */
-  mapEmbedUrl: '',
+  mapEmbedUrl: 'https://maps.google.com/maps?q=Calle%20156%20%23%207D-75%2C%20Usaqu%C3%A9n%2C%20Bogot%C3%A1%2C%20Colombia&z=16&output=embed',
   email: 'contacto@mudacol.com',
   instagramHandle: '@muda.col',
   instagramUrl: 'https://www.instagram.com/muda.col/',

@@ -1,4 +1,4 @@
-import { contact, contactCta, ctaLabels, PLACEHOLDERS, SHOW_PENDING } from '../content';
+import { contact, contactCta, ctaLabels } from '../content';
 import { Pending } from './ui/Pending';
 import { InstagramIcon, WhatsAppIcon } from './ui/BrandIcons';
 import { Icon } from './ui/Icon';
@@ -91,13 +91,7 @@ export function ContactCTA() {
               referrerPolicy="no-referrer-when-downgrade"
               className="mt-4 h-56 w-full rounded-2xl border-0"
             />
-          ) : (
-            SHOW_PENDING && (
-              <div className="mt-4 flex h-32 items-center justify-center rounded-2xl border-2 border-dashed border-white/40 bg-brand-dark/30">
-                <span className="placeholder-tag">{PLACEHOLDERS.mapa}</span>
-              </div>
-            )
-          )}
+          ) : null}
         </Reveal>
       </div>
     </section>
