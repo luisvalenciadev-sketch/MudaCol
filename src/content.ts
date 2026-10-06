@@ -3,6 +3,15 @@
 // (resumen en docs/respuestas-cliente.md). No agregar cifras, testimonios ni datos no confirmados.
 // Los valores entre corchetes [ ] son marcadores pendientes de confirmar con el cliente.
 
+/**
+ * Modo revisión: VITE_SHOW_PENDING=true muestra los datos pendientes como etiquetas amarillas.
+ * Por defecto (lanzamiento) se ocultan; cada dato aparece solo cuando se completa aquí.
+ */
+export const SHOW_PENDING = import.meta.env.VITE_SHOW_PENDING === 'true';
+
+/** Un dato está pendiente mientras sea un marcador entre corchetes, p. ej. "[CIUDAD]". */
+export const isPending = (value: string) => value.trim().startsWith('[');
+
 export const PLACEHOLDERS = {
   razonSocial: '[RAZÓN SOCIAL]',
   nit: '[NIT]',
@@ -24,6 +33,8 @@ export const contact = {
   whatsappUrl: `https://wa.me/${WHATSAPP_NUMBER}?text=Hola%20MudaCol%2C%20quiero%20cotizar%20mi%20mudanza`,
   address: 'Calle 156 # 7D-75',
   city: PLACEHOLDERS.ciudad,
+  /** URL de Google Maps para insertar (Compartir → Insertar un mapa → copiar el src). Vacío = sin mapa. */
+  mapEmbedUrl: '',
   email: 'contacto@mudacol.com',
   instagramHandle: '@muda.col',
   instagramUrl: 'https://www.instagram.com/muda.col/',
@@ -95,7 +106,7 @@ export const hero = {
   // Foto de banco (Pexels) aprobada por el cliente; créditos en design/images/pexels/CREDITOS.md
   image: {
     base: '/images/camion-furgon',
-    widths: [640, 1024, 1376],
+    widths: [480, 768, 1024, 1376],
     width: 1376,
     height: 917,
     alt: 'Camión furgón blanco de mudanzas estacionado en una calle',
@@ -397,6 +408,7 @@ export const quoteForm = {
     details: 'Detalles',
     photos: 'Adjunto fotos o videos en este chat.',
     consent: 'Acepto la política de tratamiento de datos personales.',
+    source: 'Origen de la visita',
   },
 };
 
@@ -517,11 +529,19 @@ export const faq = {
   ],
 };
 
+export type Testimonial = { name: string; text: string; service?: string };
+
 export const testimonials = {
   eyebrow: 'Clientes',
   title: 'Lo que dicen nuestros clientes',
   placeholder: PLACEHOLDERS.testimonios,
   note: 'Este espacio se completará con testimonios reales de clientes de MudaCol (pendiente: recibir los textos autorizados).',
+  /**
+   * Testimonios reales con autorización del cliente (respuesta #20). Mientras esté vacío,
+   * la sección no se muestra en lanzamiento. Ejemplo:
+   * { name: 'Nombre Apellido', text: 'Texto del testimonio…', service: 'Mudanza Bogotá – Medellín' }
+   */
+  items: [] as Testimonial[],
 };
 
 export const contactCta = {
@@ -535,12 +555,14 @@ export const footer = {
   contactTitle: 'Contacto',
   paymentTitle: 'Formas de pago',
   whatsappCta: 'Escríbenos por WhatsApp',
+  /** Cuando existan las páginas, poner su enlace en href y pending: false */
   legal: [
     { label: 'Política de tratamiento de datos', href: '#', pending: true },
     { label: 'Términos del servicio', href: '#', pending: true },
   ],
   pendingLabel: '(página pendiente)',
   /** Respuesta del cliente #1: se completa cuando la empresa esté registrada */
-  legalEntity: `${PLACEHOLDERS.razonSocial} · NIT ${PLACEHOLDERS.nit}`,
+  razonSocial: PLACEHOLDERS.razonSocial,
+  nit: PLACEHOLDERS.nit,
   copyright: '© 2026 MudaCol. Todos los derechos reservados.',
 };

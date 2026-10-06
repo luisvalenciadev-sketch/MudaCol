@@ -16,6 +16,15 @@ services:
         value: ""
       - key: VITE_META_PIXEL_ID
         value: ""
+      - key: VITE_GADS_ID
+        value: ""
+      - key: VITE_GADS_LEAD_LABEL
+        value: ""
+      - key: VITE_GADS_CONTACT_LABEL
+        value: ""
+      # "true" solo para revisar con el cliente qué falta; vacío en lanzamiento
+      - key: VITE_SHOW_PENDING
+        value: ""
     headers:
       # Los archivos de assets llevan hash en el nombre: se pueden cachear por un año
       - path: /assets/*

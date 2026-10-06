@@ -1,10 +1,13 @@
-import { brand, contact, footer, nav } from '../content';
+import { brand, contact, footer, isPending, nav, SHOW_PENDING } from '../content';
+import { Pending } from './ui/Pending';
 import { FacebookIcon, InstagramIcon, WhatsAppIcon } from './ui/BrandIcons';
 import { Icon } from './ui/Icon';
 import { Logo } from './ui/Logo';
 
 export function Footer() {
-  const fbPending = contact.facebookUrl.startsWith('[');
+  const fbPending = isPending(contact.facebookUrl);
+  const legalLinks = footer.legal.filter((l) => !l.pending || SHOW_PENDING);
+  const showEntity = !isPending(footer.razonSocial) || SHOW_PENDING;
   return (
     <footer className="bg-brand-dark pb-24 pt-14 text-slate-300 sm:pb-10">
       <div className="container-page">
@@ -24,6 +27,7 @@ export function Footer() {
                   <InstagramIcon />
                 </a>
               </li>
+              {(!fbPending || SHOW_PENDING) && (
               <li className="flex items-center gap-2">
                 <a
                   href={fbPending ? '#' : contact.facebookUrl}
@@ -36,6 +40,7 @@ export function Footer() {
                 </a>
                 {fbPending && <span className="placeholder-tag">{contact.facebookUrl}</span>}
               </li>
+              )}
             </ul>
           </div>
 
@@ -73,7 +78,8 @@ export function Footer() {
               <li className="flex items-start gap-2">
                 <Icon name="location_on" className="mt-0.5 text-[18px] text-blue-400" />
                 <span>
-                  {contact.address}, <span className="placeholder-tag">{contact.city}</span>
+                  {contact.address}
+                  <Pending value={contact.city} prefix=", " />
                 </span>
               </li>
               <li className="flex items-start gap-2">
@@ -109,12 +115,15 @@ export function Footer() {
           <div className="space-y-1">
             <p>{footer.copyright}</p>
             {/* Razón social y NIT: pendientes hasta que la empresa quede registrada (respuesta del cliente #1) */}
-            <p>
-              <span className="placeholder-tag">{footer.legalEntity}</span>
-            </p>
+            {showEntity && (
+              <p>
+                <Pending value={footer.razonSocial} /> · NIT <Pending value={footer.nit} />
+              </p>
+            )}
           </div>
+          {legalLinks.length > 0 && (
           <ul className="flex flex-wrap justify-center gap-x-5 gap-y-2">
-            {footer.legal.map((l) => (
+            {legalLinks.map((l) => (
               <li key={l.label}>
                 <a href={l.href} className="hover:text-white">
                   {l.label}
@@ -123,6 +132,7 @@ export function Footer() {
               </li>
             ))}
           </ul>
+          )}
         </div>
       </div>
     </footer>

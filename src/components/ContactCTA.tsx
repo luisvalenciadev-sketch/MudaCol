@@ -1,4 +1,5 @@
-import { contact, contactCta, ctaLabels, PLACEHOLDERS } from '../content';
+import { contact, contactCta, ctaLabels, PLACEHOLDERS, SHOW_PENDING } from '../content';
+import { Pending } from './ui/Pending';
 import { InstagramIcon, WhatsAppIcon } from './ui/BrandIcons';
 import { Icon } from './ui/Icon';
 import { Reveal } from './ui/Reveal';
@@ -58,7 +59,8 @@ export function ContactCTA() {
             <li className="flex items-center gap-3">
               <Icon name="location_on" className="text-[20px] text-blue-200" />
               <span>
-                {contact.address}, <span className="placeholder-tag">{contact.city}</span>
+                {contact.address}
+                <Pending value={contact.city} prefix=", " />
               </span>
             </li>
             <li className="flex items-center gap-3">
@@ -81,9 +83,21 @@ export function ContactCTA() {
               </a>
             </li>
           </ul>
-          <div className="mt-4 flex h-32 items-center justify-center rounded-2xl border-2 border-dashed border-white/40 bg-brand-dark/30">
-            <span className="placeholder-tag">{PLACEHOLDERS.mapa}</span>
-          </div>
+          {contact.mapEmbedUrl ? (
+            <iframe
+              title={`Mapa: ${contact.address}`}
+              src={contact.mapEmbedUrl}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="mt-4 h-56 w-full rounded-2xl border-0"
+            />
+          ) : (
+            SHOW_PENDING && (
+              <div className="mt-4 flex h-32 items-center justify-center rounded-2xl border-2 border-dashed border-white/40 bg-brand-dark/30">
+                <span className="placeholder-tag">{PLACEHOLDERS.mapa}</span>
+              </div>
+            )
+          )}
         </Reveal>
       </div>
     </section>

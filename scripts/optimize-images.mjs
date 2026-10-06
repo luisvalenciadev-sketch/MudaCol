@@ -16,7 +16,7 @@ for (const f of readdirSync(OUT)) {
 
 const jobs = [
   // Inicio: camión furgón blanco (Nadine Ginzel)
-  { src: 'camion-furgon.jpg', out: 'camion-furgon', widths: [640, 1024, 1376] },
+  { src: 'camion-furgon.jpg', out: 'camion-furgon', widths: [480, 768, 1024, 1376] },
   // Quiénes somos: personal cargando un sofá (RDNE Stock project)
   { src: 'personal-cargando.jpg', out: 'personal-cargando', widths: [640, 960] },
   // Quiénes somos: protección de un sofá con plástico (Blue Bird)

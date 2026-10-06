@@ -62,9 +62,10 @@ Si cambias la imagen del hero, actualiza también el `<link rel="preload">` de `
 
 ### Íconos
 
-`index.html` carga solo los íconos de Material Symbols que se usan (parámetro `icon_names`, en
-orden alfabético). Si agregas un ícono nuevo en `content.ts` o en un componente, añade su nombre
-a esa lista o no se va a ver.
+Las fuentes se sirven desde el propio sitio (más rápido y sin llamadas a Google):
+
+- Inter y Oswald: paquetes `@fontsource` importados en `src/main.tsx` (solo el subconjunto latino).
+- Íconos: un subconjunto de Material Symbols en `public/fonts/material-symbols.woff2` (8 KB). Si agregas un ícono nuevo, corre `npm run icons`: detecta los íconos usados en `src/` y vuelve a descargar el subconjunto.
 
 ## Formulario de cotización
 
@@ -81,20 +82,36 @@ La confirmación automática al cliente se configura en WhatsApp Business (*Mens
 
 ## Medición
 
-GA4 y Meta Pixel se activan solo si hay identificadores en `.env` (local) o en *Environment* de Render:
+GA4, Google Ads y Meta Pixel se activan solo si hay identificadores en `.env` (local) o en *Environment* de Render:
 
 ```
 VITE_GA_ID=G-XXXXXXXXXX
+VITE_GADS_ID=AW-XXXXXXXXXX
+VITE_GADS_LEAD_LABEL=etiqueta-conversion-solicitud
+VITE_GADS_CONTACT_LABEL=etiqueta-conversion-contacto
 VITE_META_PIXEL_ID=1234567890
 ```
 
-Eventos: `generate_lead` (envío del formulario), `contact` (clic en WhatsApp) y `click_to_call` (clic en "Llamar"). Detalle en `src/services/analytics.ts`.
+Eventos: `generate_lead` (envío del formulario), `contact` (clic en WhatsApp) y `click_to_call` (clic en "Llamar"). Con Google Ads, `generate_lead` dispara la conversión de "solicitud" y los otros dos la de "contacto". Detalle en `src/services/analytics.ts`.
+
+**Origen de la visita.** Si la persona llega desde un anuncio (`gclid`, `fbclid` o `utm_*` en la URL), el mensaje de WhatsApp termina con "Origen de la visita: Google Ads – campaña …". Así el asesor sabe qué campaña trajo cada solicitud. Usa `utm_campaign` en los anuncios para ver el nombre de la campaña.
+
+## SEO
+
+- `robots.txt` se genera en cada build. `sitemap.xml` y la etiqueta canónica se generan cuando `VITE_SITE_URL` tiene el dominio final (plugin `seoFiles` en `vite.config.ts`).
+- Title, meta description, Open Graph y JSON-LD `MovingCompany` están en `index.html`.
+
+## Modo de lanzamiento
+
+Por defecto, los datos pendientes del cliente **no se muestran**: la dirección sale sin ciudad, y la sección de testimonios, el ícono de Facebook, la razón social y los enlaces legales se ocultan hasta que el dato exista en `src/content.ts`.
+
+Para revisar con el cliente qué falta, usa `VITE_SHOW_PENDING=true`: los pendientes vuelven a verse como etiquetas amarillas.
 
 ## Marcadores pendientes
 
 Resumen completo de las respuestas del cliente y lo que falta pedir: [`docs/respuestas-cliente.md`](docs/respuestas-cliente.md).
 
-Se ven en la página como etiquetas amarillas. Se editan en `src/content.ts` (objeto `PLACEHOLDERS`
+En lanzamiento se ocultan; con `VITE_SHOW_PENDING=true` se ven como etiquetas amarillas. Se editan en `src/content.ts` (objeto `PLACEHOLDERS`
 y `contact`).
 
 | Marcador | Dónde aparece | Qué falta |

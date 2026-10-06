@@ -6,7 +6,7 @@
 // CRM), se agrega aquí, dentro de sendQuote(), sin tocar el formulario.
 
 import { quoteForm as t, whatsappLink } from '../content';
-import { trackEvent } from './analytics';
+import { getVisitSource, trackEvent } from './analytics';
 
 export type YesNo = '' | 'si' | 'no';
 
@@ -98,7 +98,11 @@ export function buildQuoteMessage(d: QuoteData) {
     ]),
     m.photos,
     m.consent,
-  ].join('\n\n');
+    // Origen de la visita (anuncio o campaña), si lo hay
+    line(m.source, getVisitSource()),
+  ]
+    .filter(Boolean)
+    .join('\n\n');
 }
 
 /** Enlace de WhatsApp con la solicitud completa. */

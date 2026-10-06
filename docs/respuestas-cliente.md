@@ -51,7 +51,7 @@ Los textos están en `src/content.ts`.
 | 30 | Mensaje prellenado para WhatsApp (respondieron "sí", sin el texto) | Hoy: "Hola MudaCol, quiero cotizar mi mudanza" |
 | 31 | Nombre del dominio | Configurar `VITE_SITE_URL` y el dominio en Render |
 | 32 | Qué hosting tienen | Hoy está en Render; decidir si se mueve |
-| 33 | ID de Google Analytics 4 (G-…) y de Meta Pixel | Pegarlos en Render → Environment (`VITE_GA_ID`, `VITE_META_PIXEL_ID`) |
+| 33–34 | ID de Google Analytics 4 (G-…), de Google Ads (AW-… y etiquetas de conversión) y de Meta Pixel | Pegarlos en Render → Environment (`VITE_GA_ID`, `VITE_GADS_*`, `VITE_META_PIXEL_ID`) |
 | 34–35 | Fechas de pauta y fases siguientes (chat, calculadora, blog) | Planear páginas de aterrizaje y fases |
 | 36 | Quién actualizará los contenidos (respondieron "sí") | Definir si se necesita un administrador de contenido |
 | 37–38 | Documentos de política de datos y términos (respondieron que sí existen) | Los enlaces del pie de página siguen pendientes |
