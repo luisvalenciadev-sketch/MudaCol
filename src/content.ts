@@ -92,7 +92,6 @@ export const hero = {
   badges: [
     { icon: null, label: 'Mudanzas nacionales dentro de Colombia', tone: 'neutral' },
     { icon: 'workspace_premium', label: 'Más de 10 años de experiencia', tone: 'neutral' },
-    { icon: 'local_shipping', label: 'Desde $500.000 COP', tone: 'blue' },
     { icon: 'verified', label: 'Cotización gratuita y sin compromiso', tone: 'green' },
   ] as const,
   features: [

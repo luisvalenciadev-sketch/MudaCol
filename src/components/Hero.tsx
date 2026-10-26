@@ -1,6 +1,5 @@
 import { brand, contact, ctaLabels, hero } from '../content';
 import { Icon } from './ui/Icon';
-import { Logo } from './ui/Logo';
 import { Picture } from './ui/Picture';
 import { WhatsAppIcon } from './ui/BrandIcons';
 import { Reveal } from './ui/Reveal';
@@ -30,45 +29,41 @@ export function Hero() {
       />
 
       <div className="container-page relative">
-        <ul className="hero-in mb-8 flex flex-wrap items-center gap-2.5" style={stagger(0)} aria-label="Lo esencial">
-          {hero.badges.map((b) => (
-            <li
-              key={b.label}
-              className={`inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 font-body text-xs font-semibold uppercase tracking-wider ${badgeTone[b.tone]}`}
-            >
-              {b.icon ? (
-                <Icon name={b.icon} className="text-[15px]" />
-              ) : (
-                <span className="mr-0.5 h-2 w-2 shrink-0 rounded-full bg-blue-400" aria-hidden="true" />
-              )}
-              {b.label}
-            </li>
-          ))}
-        </ul>
-
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12">
           <div className="flex flex-col gap-6 lg:col-span-7">
-            <div className="hero-in self-start" style={stagger(1)}>
-              <Logo className="h-14 w-auto drop-shadow-md sm:h-16" title="Mudanzas MudaCol" />
-            </div>
-
             <h1
               id="hero-title"
               className="hero-in font-headline text-4xl font-bold uppercase tracking-tight text-white sm:text-5xl lg:text-[56px] lg:leading-[1.1]"
-              style={stagger(2)}
+              style={stagger(0)}
             >
               {brand.sloganLine1} <br className="hidden sm:inline" />
               <span className="text-blue-400">{brand.sloganLine2}</span>
             </h1>
 
-            <p className="hero-in max-w-2xl font-body text-lg leading-relaxed text-slate-300 sm:text-xl" style={stagger(3)}>{hero.subtitle}</p>
+            <p className="hero-in -mt-2 max-w-2xl font-body text-lg leading-relaxed text-slate-300 sm:text-xl" style={stagger(1)}>{hero.subtitle}</p>
 
-            <p className="hero-in inline-flex items-center gap-2 font-body text-sm font-medium text-slate-300" style={stagger(4)}>
+            <ul className="hero-in flex flex-col items-start gap-2" style={stagger(2)} aria-label="Lo esencial">
+              {hero.badges.map((b) => (
+                <li
+                  key={b.label}
+                  className={`inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 font-body text-xs font-semibold uppercase tracking-wider ${badgeTone[b.tone]}`}
+                >
+                  {b.icon ? (
+                    <Icon name={b.icon} className="text-[15px]" />
+                  ) : (
+                    <span className="mr-0.5 h-2 w-2 shrink-0 rounded-full bg-blue-400" aria-hidden="true" />
+                  )}
+                  {b.label}
+                </li>
+              ))}
+            </ul>
+
+            <p className="hero-in inline-flex items-center gap-2 font-body text-sm font-medium text-slate-300" style={stagger(3)}>
               <span className="h-2 w-2 shrink-0 rounded-full bg-brand-green" aria-hidden="true" />
               {brand.pillars}
             </p>
 
-            <div className="hero-in flex flex-col items-stretch gap-3.5 pt-2 sm:flex-row sm:items-center" style={stagger(5)}>
+            <div className="hero-in flex flex-col items-stretch gap-3.5 pt-2 sm:flex-row sm:items-center" style={stagger(4)}>
               <a href="#cotizar" className="btn-primary btn-lg">
                 <Icon name="calculate" className="text-[20px]" />
                 {ctaLabels.quote}
@@ -79,7 +74,7 @@ export function Hero() {
               </a>
             </div>
 
-            <ul className="hero-in grid grid-cols-1 gap-3 pt-3 sm:grid-cols-3" style={stagger(6)}>
+            <ul className="hero-in grid grid-cols-1 gap-3 pt-3 sm:grid-cols-3" style={stagger(5)}>
               <li className="flex items-center gap-2.5 rounded-lg border border-slate-800 bg-slate-900/90 p-3">
                 <WhatsAppIcon className="h-5 w-5 shrink-0 text-brand-green" />
                 <span className="font-body text-xs text-slate-300">

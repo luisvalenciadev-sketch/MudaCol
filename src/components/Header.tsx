@@ -97,7 +97,7 @@ export function Header() {
           <a
             href="#cotizar"
             aria-current={active === 'cotizar' ? 'location' : undefined}
-            className={`btn-primary hidden px-5 py-2.5 text-[15px] shadow-sm sm:inline-flex ${
+            className={`btn-primary hidden px-5 py-2.5 text-[15px] shadow-sm sm:inline-flex xl:hidden ${
               active === 'cotizar' ? 'ring-2 ring-blue-300 ring-offset-2 ring-offset-brand-dark' : ''
             }`}
           >
@@ -107,7 +107,7 @@ export function Header() {
             href={contact.whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-whatsapp gap-1.5 px-3.5 py-2.5 text-[14px] shadow-none"
+            className="btn-whatsapp gap-1.5 px-3.5 py-2.5 text-[14px] shadow-none xl:hidden"
             aria-label={`Escríbenos por WhatsApp al ${contact.whatsappDisplay}`}
           >
             <WhatsAppIcon className="h-[18px] w-[18px]" />
