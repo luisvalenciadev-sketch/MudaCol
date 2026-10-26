@@ -93,7 +93,7 @@ export function Header() {
           </ul>
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3 xl:hidden">
           <a
             href="#cotizar"
             aria-current={active === 'cotizar' ? 'location' : undefined}
